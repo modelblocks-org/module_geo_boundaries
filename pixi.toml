@@ -24,3 +24,21 @@ pytz = ">=2026.1.post1"
 
 [tasks]
 test-integration = {cmd = "pytest tests/integration_test.py"}
+
+[feature.shape]
+channels = ["conda-forge", "nodefaults"]
+
+[feature.shape.dependencies]
+boto3 = "1.40.46.*"
+duckdb = "1.2.0.*"
+geopandas = "1.0.1.*"
+ipdb = "0.13.13.*"
+pandera-geopandas = "0.24.*"
+pandera-io = "0.24.*"
+pyarrow = "19.0.1.*"
+pycountry = "24.6.1.*"
+shapely = "2.1.1.*"
+numpy = "2.3.5.*"
+
+[environments]
+shape = { features = ["shape"], no-default-feature = true }

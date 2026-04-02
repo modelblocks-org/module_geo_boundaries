@@ -3,7 +3,9 @@
 A module to create arbitrary regional boundary datasets for energy systems modelling
 
 <!-- Place an attractive image of module outputs here -->
-
+<p align="center">
+  <img src="./figures/shapes.png" width="60%">
+</p>
 
 ## About
 <!-- Please do not modify this templated section -->
@@ -20,11 +22,11 @@ and the `snakemake` [documentation](https://snakemake.readthedocs.io/en/stable/s
 Data processing steps:
 
 <p align="center">
-  <img src="./figures/rulegraph.png" width="50%">
+  <img src="./figures/rulegraph.png" width="60%">
 </p>
 
 
-1. The configuration file is read to identify the countries and regional aggregation (`subtype` in the configuration) to process.
+1. The configuration file is read to identify the datasets to use as well as the specific countries and regional aggregation (`subtype` in the configuration) to process.
     - Country area data: [GADM](https://gadm.org/), [Overture Maps](https://overturemaps.org/) and [NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) divisions are supported.
     - Exclusive Economic Zone (EEZ) data: [Marine regions](https://www.marineregions.org/).
 
@@ -47,6 +49,8 @@ Please consult the configuration [README](./config/README.md) and the [configura
 
 ## Input / output structure
 <!-- Please describe input / output file placement below -->
+
+This module only has one output: a geoparquet file with your requested geo-boundary "shapes".
 
 Please consult the [interface file](./INTERFACE.yaml) for more information.
 

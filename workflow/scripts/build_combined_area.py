@@ -13,14 +13,14 @@ if TYPE_CHECKING:
     snakemake: Any
 
 
-def plot_combined_area(combined_file: str, path: str):
+def plot_combined_area(combined_file: str, path: str, crs: str):
     """Generate a nice figure of the resulting file."""
-    gdf = gpd.read_parquet(combined_file)
-    ax = gdf.plot(figsize=(10, 10), column="shape_class")
-    ax.set_xlabel("longitude")
-    ax.set_ylabel("latitude")
+    gdf = gpd.read_parquet(combined_file).to_crs(crs)
+    fig, ax = plt.subplots(figsize=(7, 7), layout="constrained")
+    ax = gdf.plot(ax=ax, column="shape_class", legend=False)
+    ax.set(xticks=[], yticks=[], xlabel="", ylabel="")
     ax.set_title("Combined regions")
-    plt.savefig(path)
+    fig.savefig(path, dpi=200, bbox_inches="tight")
 
 
 def _remove_overlaps(gdf: gpd.GeoDataFrame, projected_crs: str) -> gpd.GeoDataFrame:
@@ -145,5 +145,7 @@ if __name__ == "__main__":
         combined_file=snakemake.output.combined,
     )
     plot_combined_area(
-        combined_file=snakemake.output.combined, path=snakemake.output.plot
+        combined_file=snakemake.output.combined,
+        path=snakemake.output.plot,
+        crs=snakemake.params.crs["projected"],
     )
