@@ -12,7 +12,7 @@ rule download_country_overture:
     output:
         path="<resources>/automatic/countries/overture_{country}_{subtype}.parquet",
     log:
-        "<logs>/download_country_overture_{country}_{subtype}.log",
+        "<logs>/{country}/download_country_overture_{subtype}.log",
     conda:
         "../envs/shape.yaml"
     script:
@@ -27,7 +27,7 @@ rule download_country_gadm:
             "<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet"
         ),
     log:
-        "<logs>/download_country_gadm_{country}_{subtype}.log",
+        "<logs>/{country}/download_country_gadm_{subtype}.log",
     conda:
         "../envs/shape.yaml"
     script:
@@ -45,7 +45,7 @@ rule standardise_country_gadm:
     output:
         standardised="<resources>/automatic/countries/gadm_{country}_{subtype}.parquet",
     log:
-        "<logs>/standardise_country_gadm_{country}_{subtype}.log",
+        "<logs>/{country}/standardise_country_gadm_{subtype}.log",
     conda:
         "../envs/shape.yaml"
     script:
@@ -77,7 +77,7 @@ rule standardise_country_nuts:
     output:
         path="<resources>/automatic/countries/nuts_{country}_{subtype}.parquet",
     log:
-        "<logs>/standardise_country_nuts_{country}_{subtype}.log",
+        "<logs>/{country}/standardise_country_nuts_{subtype}.log",
     conda:
         "../envs/shape.yaml"
     script:
