@@ -29,15 +29,14 @@ Data processing steps:
 1. The configuration file is read to identify the datasets to use as well as the specific countries and regional aggregation (`subtype` in the configuration) to process.
     - Country area data: [GADM](https://gadm.org/), [Overture Maps](https://overturemaps.org/) and [NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) divisions are supported.
     - Exclusive Economic Zone (EEZ) data: [Marine regions](https://www.marineregions.org/).
-
-> [!TIP]
-> The subtype naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
-> Use the references at the bottom of this page for more details.
-
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
 Contested regions are removed at this stage.
 3. Land is clipped using maritime Exclusive Economic Zones (EEZ).
 4. Each polygon is clipped using its neighbours to minimise overlapping polygons.
+
+> [!TIP]
+> The `subtype` naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
+> Use the references at the bottom of this page for more details.
 
 > [!CAUTION]
 > To increase the replicability of your workflow, we recommend using NUTS and GADM as sources whenever possible as they are more stable than Overture Maps.
