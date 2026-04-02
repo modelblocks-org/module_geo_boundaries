@@ -8,22 +8,22 @@ rule build_combined_area:
         crs=config["crs"],
     input:
         countries=[
-            f"resources/automatic/countries/{data['source']}_{country}_{data['subtype']}.parquet"
+            f"<resources>/automatic/countries/{data['source']}_{country}_{data['subtype']}.parquet"
             for country, data in config["countries"].items()
         ],
         marine=[
-            f"resources/automatic/eez/{country}.parquet"
+            f"<resources>/automatic/eez/{country}.parquet"
             for country in config["countries"]
         ],
     output:
-        combined="results/shapes.parquet",
+        combined="<shapes>",
         plot=report(
-            "results/shapes.png",
+            "<results>/shapes.png",
             caption="../report/results.rst",
             category="Combined area",
         ),
     log:
-        "logs/build_combined_area.log",
+        "<logs>/build_combined_area.log",
     conda:
         "../envs/shape.yaml"
     script:
