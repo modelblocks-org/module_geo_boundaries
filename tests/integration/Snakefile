@@ -3,15 +3,21 @@ configfile: workflow.source_path("./test_config.yaml")
 
 
 # Import the module and configure it.
-# `snakefile:` can use plain paths, URLs or special github(...) / gitlab(...) markers.
-# `prefix:` re-routes all input/output paths of the module, helping to avoid file conflicts.
+# `snakefile:` specifies the module. It can use file paths and special github(...) / gitlab(...) markers
+# `config`: specifies the module configuration.
+# `pathvars:` helps you re-wire where the module places files.
 module module_geo_boundaries:
     snakefile:
         "../../workflow/Snakefile"
     config:
         config["module_geo_boundaries"]
-    prefix:
-        "results/integration_test/"
+    pathvars:
+        # Redirect specific module results (outputs)
+        shapes="results/outputs/shapes.parquet",
+        # Redirect module intermediate files
+        logs="resources/geo_boundaries/logs",
+        resources="resources/geo_boundaries/resources",
+        results="resources/geo_boundaries/results",
 
 
 # Add a prefix to all module rules, to avoid naming conflicts.
@@ -24,4 +30,4 @@ rule all:
         "A generic test case for this module."
     default_target: True
     input:
-        "results/integration_test/results/shapes.parquet",
+        "results/outputs/shapes.parquet",
