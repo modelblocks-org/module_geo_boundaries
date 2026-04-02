@@ -142,7 +142,7 @@ def main() -> None:
     gdf.to_parquet(snakemake.output.path)
 
     fig, _ = plot(gdf, iso3)
-    fig.savefig(snakemake.output.plot, dpi=300)
+    fig.savefig(snakemake.output.plot, bbox_inches="tight", dpi=200)
 
 
 if __name__ == "__main__":

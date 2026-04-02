@@ -1,9 +1,8 @@
-# Configuration
+We recommend consulting the following before using this module:
+- `config/config.yaml`: a generic example configuration of this module.
+- `workflow/internal/config.schema.yaml`: a schematic overview of all the configuration options of this module.
+- `INTERFACE.yaml`: lists module input and output files, and their default locations.
+- `tests/integration/Snakefile`: an example of how to call this module from another workflow.
 
-This workflow is part of the [clio project](https://clio.readthedocs.io/en/latest/).
-Please consult our documentation for more details.
-Other useful resources are:
-
-- `INTERFACE.yaml`: user input files (placed in `resources/user`) and module output files (placed in `results`).
-- `workflow/internal/config.schema.yaml`: general configuration options.
-- `tests/integration/`: a simple example of how to use this module.
+This data module is part of the [Modelblocks](https://www.modelblocks.org/) project.
+Please consult the [Modelblocks documentation](https://modelblocks.readthedocs.io/) for more details.

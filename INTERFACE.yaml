@@ -1,4 +1,17 @@
 # Module Input-Output structure for automated doc. generation
-results:
-  "shapes.parquet": "Harmonised geodata for all configured countries, including non-contested exclusive economic zones."
-  "shapes.png": "Figure depicting the resulting shapes."
+pathvars:
+  snakemake_defaults:
+    logs:
+      default: "<logs>"
+      description: location of rule log files.
+    resources:
+      default: "<resources>"
+      description: "location of module resource files."
+    results:
+      default: "<results>"
+      description: "location of module results."
+  results:
+    shapes:
+      default: "<results>/shapes.parquet"
+      description: |
+        Harmonised geoparquet dataset with all the configured countries, including non-contested exclusive economic zones.

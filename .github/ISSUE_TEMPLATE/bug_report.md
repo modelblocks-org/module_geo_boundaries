@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. Linux Fedora 41, Windows 10...]
+ - OS: [e.g. Linux Fedora 43, Windows 11...]
  - Version [e.g. v0.1.1]
 
 **Additional context**
