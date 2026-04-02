@@ -6,4 +6,6 @@ on:
 
 jobs:
   release-workflow:
-    uses: calliope-project/data-module-template/.github/workflows/template-release.yml@latest
+    permissions:
+      contents: write
+    uses: modelblocks-org/data-module-template/.github/workflows/template-release.yml@latest

@@ -6,4 +6,4 @@ on:
 
 jobs:
   copier-update:
-    uses: calliope-project/data-module-template/.github/workflows/template-check-version.yml@latest
+    uses: modelblocks-org/data-module-template/.github/workflows/template-check-version.yml@latest
