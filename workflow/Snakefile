@@ -2,7 +2,7 @@ import yaml
 
 from snakemake.utils import min_version, validate
 
-min_version("8.10")
+min_version("9.19")
 
 
 # !!!!! IMPORTANT !!!!!
