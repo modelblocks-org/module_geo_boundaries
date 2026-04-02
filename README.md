@@ -30,9 +30,9 @@ Data processing steps:
     - Country area data: [GADM](https://gadm.org/), [Overture Maps](https://overturemaps.org/) and [NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) divisions are supported.
     - Exclusive Economic Zone (EEZ) data: [Marine regions](https://www.marineregions.org/).
 
-    > [!TIP]
-    > The subtype naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
-    > Use the references at the bottom of this page for more details.
+> [!TIP]
+> The subtype naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
+> Use the references at the bottom of this page for more details.
 
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
 Contested regions are removed at this stage.
