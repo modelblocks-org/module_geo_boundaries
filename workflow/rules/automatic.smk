@@ -23,7 +23,9 @@ rule download_country_gadm:
     message:
         "Download '{wildcards.country}_{wildcards.subtype}' dataset from GADM."
     output:
-        path=temp("<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet"),
+        path=temp(
+            "<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet"
+        ),
     log:
         "<logs>/download_country_gadm_{country}_{subtype}.log",
     conda:

@@ -12,6 +12,7 @@ pathvars:
     # Module results
     shapes="<results>/shapes.parquet",
 
+
 # Load the example configuration. This will be overridden by users.
 configfile: workflow.source_path("../config/config.yaml")
 
