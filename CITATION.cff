@@ -3,8 +3,8 @@
 # https://citation-file-format.github.io/
 cff-version: 1.2.0
 message: If you use this software or data produced by it, please cite it using the metadata from this file.
-title: "clio - module_geo_boundaries"
-repository: "https://github.com/calliope-project/module_geo_boundaries"
+title: "Modelblocks - module_geo_boundaries"
+repository: "https://github.com/modelblocks-org/module_geo_boundaries"
 license: Apache-2.0
 authors:
   - given-names: Ivan
