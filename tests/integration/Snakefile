@@ -7,10 +7,6 @@ configfile: workflow.source_path("./test_config.yaml")
 # `config`: specifies the module configuration.
 # `pathvars:` helps you re-wire where the module places files.
 module module_geo_boundaries:
-    snakefile:
-        "../../workflow/Snakefile"
-    config:
-        config["module_geo_boundaries"]
     pathvars:
         # Redirect specific module results (outputs)
         shapes="results/outputs/shapes.parquet",
@@ -18,6 +14,10 @@ module module_geo_boundaries:
         logs="resources/geo_boundaries/logs",
         resources="resources/geo_boundaries/resources",
         results="resources/geo_boundaries/results",
+    snakefile:
+        "../../workflow/Snakefile"
+    config:
+        config["module_geo_boundaries"]
 
 
 # Add a prefix to all module rules, to avoid naming conflicts.
@@ -26,8 +26,8 @@ use rule * from module_geo_boundaries as geo_boundaries_module_*
 
 # Request something from the module
 rule all:
-    message:
-        "A generic test case for this module."
     default_target: True
     input:
         "results/outputs/shapes.parquet",
+    message:
+        "A generic test case for this module."
