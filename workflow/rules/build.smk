@@ -2,10 +2,6 @@
 
 
 rule build_combined_area:
-    message:
-        "Combine land and marine polygons."
-    params:
-        crs=config["crs"],
     input:
         countries=[
             f"<resources>/automatic/countries/{data['source']}_{country}_{data['subtype']}.parquet"
@@ -26,5 +22,9 @@ rule build_combined_area:
         "<logs>/build_combined_area.log",
     conda:
         "../envs/shape.yaml"
+    params:
+        crs=config["crs"],
+    message:
+        "Combine land and marine polygons."
     script:
         "../scripts/build_combined_area.py"
