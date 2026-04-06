@@ -25,7 +25,7 @@ repos:
 
   # Python file formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.15.9
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -33,13 +33,13 @@ repos:
 
   # Snakemake file formatting
   - repo: https://github.com/snakemake/snakefmt
-    rev: v0.11.4
+    rev: v1.0.0
     hooks:
       - id: snakefmt
 
   # Spelling
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         files: .*\.(py|smk|md)$|^Snakefile$
