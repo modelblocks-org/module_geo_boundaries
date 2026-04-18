@@ -92,6 +92,8 @@ rule download_marine_eez_area:
         "<logs>/{country}/download_marine_eez_area.log",
     conda:
         "../envs/shape.yaml"
+    params:
+        extra_eez=lambda wc: config["countries"][wc.country].get("extra_eez", []),
     message:
         "Download and standardise '{wildcards.country}' EEZ dataset."
     script:

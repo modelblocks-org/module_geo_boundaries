@@ -19,7 +19,7 @@ def module_path():
     return Path(__file__).parent.parent
 
 
-@pytest.mark.parametrize("scenario", ["config", "china_example", "europe_example"])
+@pytest.mark.parametrize("scenario", ["config", "china_example", "europe_example", "usa_example"])
 def test_config_example(module_path, scenario):
     """Example files should result in a successful run."""
     result_file = "results/shapes.parquet"

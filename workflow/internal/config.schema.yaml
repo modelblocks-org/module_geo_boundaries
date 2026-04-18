@@ -60,6 +60,15 @@ properties:
           year:
             description: "Year for NUTS source (required if source is 'nuts')."
             type: integer
+          extra_eez:
+            description: >
+              Optional. Additional EEZ zones to append to this country.
+            anyOf:
+              - type: integer
+              - type: array
+                minItems: 1
+                items:
+                  type: integer
         required:
           - subtype
           - source

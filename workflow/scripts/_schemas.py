@@ -6,6 +6,9 @@ from shapely.validation import make_valid
 
 class ShapesSchema(pa.DataFrameModel):
     """Schema for geographic shapes."""
+    class Config:
+        coerce = True
+        strict = True
 
     shape_id: Series[str] = pa.Field(unique=True)
     "A unique identifier for this shape."
@@ -24,6 +27,7 @@ class ShapesSchema(pa.DataFrameModel):
     parent_name: Series[str]
     "Human-readable name in the parent dataset."
 
+    @classmethod
     @pa.dataframe_parser
     def fix_geometries(cls, df):
         """Attempt to correct empty or malformed geometries."""
@@ -38,7 +42,3 @@ class ShapesSchema(pa.DataFrameModel):
     def check_geometries(cls, geom):
         return (geom is not None) and (not geom.is_empty) and geom.is_valid
 
-    class Config:
-        # top-level schema options from your YAML
-        coerce = True
-        strict = True

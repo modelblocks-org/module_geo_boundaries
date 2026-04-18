@@ -1,0 +1,11 @@
+# Example of regional disaggregation of a large country
+# USA has multiple marine zones, which can be appended as extras
+overture_release: "latest"
+crs:
+  projected: "epsg:3857"
+  geographic: "epsg:4326"
+countries:
+  "USA":
+    subtype: "1"
+    source: "gadm"
+    extra_eez: [8463, 8453]
