@@ -1,10 +1,34 @@
 """Rules used to construct the final dataset."""
 
+rule build_country:
+    input:
+        land=lambda wc: f"<resources>/automatic/land/{get_country_filename(wc.country)}.parquet",
+        maritime="<resources>/automatic/eez/{country}.parquet",
+    output:
+        country="<resources>/automatic/country/{country}.parquet",
+        plot=report(
+            "<resources>/automatic/country/{country}.png",
+            caption="../report/build_country.rst",
+            category="Module Geo-Boundaries",
+            subcategory="Combined countries"
+        ),
+    log:
+        "<logs>/{country}/build_country.log",
+    conda:
+        "../envs/shape.yaml"
+    params:
+        crs=config["crs"],
+        # eez_voronoi=lambda wc: config["countries"][wc.country].get("eez_voronoi", False)
+    message:
+        "{wildcards.country}: build combined land and marine polygons."
+    script:
+        "../scripts/build_country.py"
+
 
 rule build_combined_area:
     input:
         countries=[
-            f"<resources>/automatic/countries/{get_country_filename(country)}.parquet"
+            f"<resources>/automatic/land/{get_country_filename(country)}.parquet"
             for country in config["countries"]
         ],
         marine=[

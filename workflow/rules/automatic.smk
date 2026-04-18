@@ -6,7 +6,7 @@ Small transformations might be performed to make the data easier to work with.
 
 rule download_country_overture:
     output:
-        path="<resources>/automatic/countries/overture_{country}_{subtype}.parquet",
+        path="<resources>/automatic/land/overture_{country}_{subtype}.parquet",
     log:
         "<logs>/{country}/download_country_overture_{subtype}.log",
     conda:
@@ -22,7 +22,7 @@ rule download_country_overture:
 rule download_country_gadm:
     output:
         path=temp(
-            "<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet"
+            "<resources>/automatic/land/raw_gadm_{country}_{subtype}.parquet"
         ),
     log:
         "<logs>/{country}/download_country_gadm_{subtype}.log",
@@ -38,7 +38,7 @@ rule standardise_country_gadm:
     input:
         raw=rules.download_country_gadm.output.path,
     output:
-        standardised="<resources>/automatic/countries/gadm_{country}_{subtype}.parquet",
+        standardised="<resources>/automatic/land/gadm_{country}_{subtype}.parquet",
     log:
         "<logs>/{country}/standardise_country_gadm_{subtype}.log",
     conda:
@@ -71,7 +71,7 @@ rule standardise_country_nuts:
     input:
         raw=rules.download_nuts.output.path,
     output:
-        path="<resources>/automatic/countries/nuts_{country}_{subtype}_{year}_{resolution}.parquet",
+        path="<resources>/automatic/land/nuts_{country}_{subtype}_{year}_{resolution}.parquet",
     log:
         "<logs>/{country}/standardise_country_nuts_{subtype}_{year}_{resolution}.log",
     conda:

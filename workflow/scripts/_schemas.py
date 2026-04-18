@@ -42,3 +42,8 @@ class ShapesSchema(pa.DataFrameModel):
     def check_geometries(cls, geom):
         return (geom is not None) and (not geom.is_empty) and geom.is_valid
 
+class EEZSchema(ShapesSchema):
+    """Schema for marine shapes."""
+
+    contested: Series[bool]
+    """Specifies if the EEZ is contested."""

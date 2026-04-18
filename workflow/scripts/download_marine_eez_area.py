@@ -121,18 +121,17 @@ def transform_to_schema(
                 "parent_subtype": "eez",
                 "parent_id": gdf["mrgid"],
                 "parent_name": gdf["geoname"],
+                "contested": gdf["pol_type"].apply(
+                    lambda x: x in ["Joint regime", "Overlapping claim"]
+                ),
             }
         )
         # Remove cases without territorial ISO code
         standardised = standardised[~standardised["country_id"].isna()]
-        standardised = _schemas.ShapesSchema.validate(standardised)
-        # Extra: identify contested areas and potential attribution conflicts
-        standardised["contested"] = gdf["pol_type"].apply(
-            lambda x: x in ["Joint regime", "Overlapping claim"]
-        )
+        standardised = _schemas.EEZSchema.validate(standardised)
     else:
         standardised = gpd.GeoDataFrame(
-            columns=_schemas.ShapesSchema.to_schema().columns
+            columns=_schemas.EEZSchema.to_schema().columns
         )
     return standardised
 
