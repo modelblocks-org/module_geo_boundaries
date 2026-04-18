@@ -4,8 +4,8 @@
 rule build_combined_area:
     input:
         countries=[
-            f"<resources>/automatic/countries/{data['source']}_{country}_{data['subtype']}.parquet"
-            for country, data in config["countries"].items()
+            f"<resources>/automatic/countries/{get_country_filename(country)}.parquet"
+            for country in config["countries"]
         ],
         marine=[
             f"<resources>/automatic/eez/{country}.parquet"

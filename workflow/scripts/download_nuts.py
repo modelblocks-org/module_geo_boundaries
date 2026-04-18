@@ -24,7 +24,7 @@ if __name__ == "__main__":
     download_nuts_version(
         year=snakemake.wildcards.year,
         resolution=snakemake.wildcards.resolution,
-        level=snakemake.wildcards.level,
+        level=snakemake.wildcards.subtype,
         epsg=snakemake.params.epsg,
         path=snakemake.output.path,
     )

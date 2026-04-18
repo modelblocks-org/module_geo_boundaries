@@ -26,3 +26,4 @@ countries:
     source: "nuts"
     resolution: 01M
     year: 2024
+    extra_eez: 8364

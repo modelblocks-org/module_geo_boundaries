@@ -93,8 +93,10 @@ def get_country_eez_by_mrgid(
     return get_eez_by_cql(f"mrgid={mrgid}", srs_name=srs_name, timeout=timeout)
 
 
-def transform_to_clio(gdf: gpd.GeoDataFrame, country_id: str) -> gpd.GeoDataFrame:
-    """Transform the MarineRegions dataset for better clio compatibility.
+def transform_to_schema(
+    gdf: gpd.GeoDataFrame | None, country_id: str
+) -> gpd.GeoDataFrame:
+    """Transform the MarineRegions dataset for better compatibility.
 
     - Removes geopolitically contested areas
     - Adds common naming conventions.
@@ -141,9 +143,17 @@ def plot(gdf: gpd.GeoDataFrame, country: str):
     if gdf.empty:
         ax.set_title(f"{country!r} has no EEZ")
     else:
-        gdf.plot("contested", ax=ax, legend=True, legend_kwds={"title": "contested", "bbox_to_anchor":(1, 1)})
+        gdf.plot(
+            "contested",
+            ax=ax,
+            legend=True,
+            legend_kwds={
+                "title": "contested",
+                "bbox_to_anchor": (1, 1),
+                "loc": "upper left",
+            },
+        )
         ax.set_title(f"{country!r}: EEZ")
-    ax.set_axis_off()
     return fig, ax
 
 
@@ -154,16 +164,23 @@ def main() -> None:
     if not isinstance(extra_eez, list):
         extra_eez = [extra_eez]
 
-    eez_gdfs = [get_country_eez_by_iso3(iso3)]
+    eez_gdfs = []
+
+    iso3_eez = get_country_eez_by_iso3(iso3)
+    if iso3_eez is not None:
+        eez_gdfs.append(iso3_eez)
+
     for mrgid in extra_eez:
         extra_gdf = get_country_eez_by_mrgid(int(mrgid))
         if extra_gdf is None:
             raise RuntimeError(f"Configured extra_eez {mrgid!r} returned no features")
         eez_gdfs.append(extra_gdf)
 
-    combined_gdf = pd.concat([i for i in eez_gdfs if i is not None])
+    combined_gdf = None
+    if eez_gdfs:
+        combined_gdf = pd.concat([i for i in eez_gdfs if i is not None])
 
-    gdf = transform_to_clio(combined_gdf, iso3)
+    gdf = transform_to_schema(combined_gdf, iso3)
     gdf.to_parquet(snakemake.output.path)
 
     fig, _ = plot(gdf, iso3)
