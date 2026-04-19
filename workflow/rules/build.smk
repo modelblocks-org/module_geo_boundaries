@@ -18,7 +18,7 @@ rule build_country:
         "../envs/shape.yaml"
     params:
         crs=config["crs"],
-        voronoi=lambda wc: config["countries"][wc.country].get("voronoi_eez", False)
+        voronoi=internal["voronoi_eez"] | config.get("voronoi_eez", {})
     message:
         "{wildcards.country}: build combined land and marine polygons."
     script:

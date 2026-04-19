@@ -1,5 +1,8 @@
 # A minimal example of how to configure this module
 overture_release: "latest"
+voronoi_eez:
+  enabled: True
+  sample_spacing: 10000 # sample every 10 km
 crs:
   projected: "epsg:3857"
   geographic: "epsg:4326"
@@ -27,4 +30,3 @@ countries:
     resolution: 01M
     year: 2024
     extra_eez: 8364
-    voronoi_eez: True

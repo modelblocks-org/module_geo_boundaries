@@ -227,8 +227,11 @@ def main() -> None:
     shapes = combine_shapes(land, maritime, crs["geographic"])
     shapes = _schemas.ShapesSchema.validate(shapes)
 
-    if not maritime.empty and snakemake.params.voronoi:
-        shapes = split_maritime_by_shoreline_voronoi(shapes, crs=crs)
+    voronoi = snakemake.params.voronoi
+    if not maritime.empty and voronoi["enabled"]:
+        shapes = split_maritime_by_shoreline_voronoi(
+            shapes, crs=crs, sample_spacing=voronoi["sample_spacing"]
+        )
         shapes = _schemas.ShapesSchema.validate(shapes)
     shapes.to_parquet(snakemake.output.country)
 
