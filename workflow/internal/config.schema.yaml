@@ -63,12 +63,17 @@ properties:
           extra_eez:
             description: >
               Optional. Additional EEZ zones to append to this country.
+            default: []
             anyOf:
               - type: integer
               - type: array
-                minItems: 1
                 items:
                   type: integer
+          voronoi_eez:
+            description: >
+              Optional. If true, split EEZ zones to fit land zones using a Voronoi algorithm.
+            type: boolean
+            default: false
         required:
           - subtype
           - source

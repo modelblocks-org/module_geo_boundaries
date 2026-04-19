@@ -27,3 +27,4 @@ countries:
     resolution: 01M
     year: 2024
     extra_eez: 8364
+    voronoi_eez: True
