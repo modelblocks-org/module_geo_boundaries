@@ -6,7 +6,7 @@ Small transformations might be performed to make the data easier to work with.
 
 rule download_country_overture:
     output:
-        path="<resources>/automatic/countries/overture_{country}_{subtype}.parquet",
+        path="<resources>/automatic/land/overture_{country}_{subtype}.parquet",
     log:
         "<logs>/{country}/download_country_overture_{subtype}.log",
     conda:
@@ -21,9 +21,7 @@ rule download_country_overture:
 
 rule download_country_gadm:
     output:
-        path=temp(
-            "<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet"
-        ),
+        path=temp("<resources>/automatic/land/raw_gadm_{country}_{subtype}.parquet"),
     log:
         "<logs>/{country}/download_country_gadm_{subtype}.log",
     conda:
@@ -36,9 +34,9 @@ rule download_country_gadm:
 
 rule standardise_country_gadm:
     input:
-        raw="<resources>/automatic/countries/raw_gadm_{country}_{subtype}.parquet",
+        raw=rules.download_country_gadm.output.path,
     output:
-        standardised="<resources>/automatic/countries/gadm_{country}_{subtype}.parquet",
+        standardised="<resources>/automatic/land/gadm_{country}_{subtype}.parquet",
     log:
         "<logs>/{country}/standardise_country_gadm_{subtype}.log",
     conda:
@@ -54,32 +52,30 @@ rule standardise_country_gadm:
 
 rule download_nuts:
     output:
-        path="<resources>/automatic/nuts/nuts_{resolution}_{year}_{level}.parquet",
+        path="<resources>/automatic/nuts/nuts_{subtype}_{resolution}_{year}.parquet",
     log:
-        "<logs>/download_nuts_{resolution}_{year}_{level}.log",
+        "<logs>/download_nuts_{subtype}_{resolution}_{year}.log",
     conda:
         "../envs/shape.yaml"
     params:
         epsg=internal["nuts"]["epsg"],
     message:
-        "Download '{wildcards.resolution}_{wildcards.year}_{wildcards.level}' from NUTS."
+        "Download '{wildcards.subtype}_{wildcards.resolution}_{wildcards.year}' from NUTS."
     script:
         "../scripts/download_nuts.py"
 
 
 rule standardise_country_nuts:
     input:
-        raw=lambda wc: f"<resources>/automatic/nuts/nuts_{config["countries"][wc.country]["resolution"]}_{config["countries"][wc.country]["year"]}_{wc.subtype}.parquet",
+        raw=rules.download_nuts.output.path,
     output:
-        path="<resources>/automatic/countries/nuts_{country}_{subtype}.parquet",
+        path="<resources>/automatic/land/nuts_{country}_{subtype}_{year}_{resolution}.parquet",
     log:
-        "<logs>/{country}/standardise_country_nuts_{subtype}.log",
+        "<logs>/{country}/standardise_country_nuts_{subtype}_{year}_{resolution}.log",
     conda:
         "../envs/shape.yaml"
-    params:
-        year=lambda wc: config["countries"][wc.country]["year"],
     message:
-        "Standardise '{wildcards.country}_{wildcards.subtype}' NUTS dataset."
+        "Standardise '{wildcards.country}' NUTS dataset for '{wildcards.subtype}_{wildcards.resolution}_{wildcards.year}'."
     script:
         "../scripts/standardise_country_nuts.py"
 
@@ -92,6 +88,8 @@ rule download_marine_eez_area:
         "<logs>/{country}/download_marine_eez_area.log",
     conda:
         "../envs/shape.yaml"
+    params:
+        extra_eez=lambda wc: config["countries"][wc.country].get("extra_eez", []),
     message:
         "Download and standardise '{wildcards.country}' EEZ dataset."
     script:

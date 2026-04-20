@@ -12,13 +12,6 @@ $defs:
 description: "Schema for user-provided configuration files."
 type: object
 properties:
-  overture_release:
-    description: |
-      Overture data release to use. Two options are possible:
-      - A specific release string in the form of 'yyyy-mm-dd.x'.
-      - A request for the latest release in the form of 'latest'.
-    type: string
-    pattern: "^(?:latest|(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\.\\d+)$"
   crs:
     description: CRS codes (i.e., 'epsg:3035', 'EPSG:4326', 8857).
     type: object
@@ -60,6 +53,15 @@ properties:
           year:
             description: "Year for NUTS source (required if source is 'nuts')."
             type: integer
+          extra_eez:
+            description: >
+              Optional. Additional EEZ zones to append to this country.
+            default: []
+            anyOf:
+              - type: integer
+              - type: array
+                items:
+                  type: integer
         required:
           - subtype
           - source
@@ -80,6 +82,33 @@ properties:
                   - year
     minProperties: 1
     additionalProperties: false
+  overture_release:
+    description: |
+      Overture data release to use. Two options are possible:
+      - A specific release string in the form of 'yyyy-mm-dd.x'.
+      - A request for the latest release in the form of 'latest'.
+    type: string
+    pattern: "^(?:latest|(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\.\\d+)$"
+  voronoi_eez:
+    description: >
+      Optional configuration for the Voronoi EEZ splitting algorithm.
+    type: object
+    required:
+      - enabled
+      - sample_spacing
+    properties:
+      enabled:
+        description: Activation of the splitting algorithm.
+        type: boolean
+        default: false
+      sample_spacing:
+        description: >
+          Distance between sample points for shorelines.
+          Higher for finer splits at the cost of slower processing.
+          Matches the unit of the projected CRS.
+        type: integer
+        default: 10000
+        minimum: 1
 required:
   - countries
   - crs

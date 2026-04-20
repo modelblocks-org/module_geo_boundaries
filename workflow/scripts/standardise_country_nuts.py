@@ -64,7 +64,7 @@ if __name__ == "__main__":
     standardise_country_nuts(
         raw_file=snakemake.input.raw,
         country_id=snakemake.wildcards.country,
-        year=snakemake.params.year,
+        year=snakemake.wildcards.year,
         subtype=snakemake.wildcards.subtype,
         output_path=snakemake.output.path,
     )
