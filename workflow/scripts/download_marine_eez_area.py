@@ -130,9 +130,7 @@ def transform_to_schema(
         standardised = standardised[~standardised["country_id"].isna()]
         standardised = _schemas.EEZSchema.validate(standardised)
     else:
-        standardised = gpd.GeoDataFrame(
-            columns=_schemas.EEZSchema.to_schema().columns
-        )
+        standardised = gpd.GeoDataFrame(columns=_schemas.EEZSchema.to_schema().columns)
     return standardised
 
 

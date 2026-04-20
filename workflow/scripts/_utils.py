@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 from pyproj import CRS
 
 
-def check_crs_config(crs: dict[str, int | str])-> dict[str, CRS]:
+def check_crs_config(crs: dict[str, int | str]) -> dict[str, CRS]:
     """Check the crs configuration settings."""
     result = {k: CRS.from_user_input(v) for k, v in crs.items()}
     if not result["projected"].is_projected:

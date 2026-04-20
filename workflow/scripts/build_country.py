@@ -194,7 +194,6 @@ def combine_shapes(
     return combined
 
 
-
 def main() -> None:
     """Main snakemake process."""
     crs = _utils.check_crs_config(snakemake.params.crs)

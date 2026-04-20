@@ -21,9 +21,7 @@ rule download_country_overture:
 
 rule download_country_gadm:
     output:
-        path=temp(
-            "<resources>/automatic/land/raw_gadm_{country}_{subtype}.parquet"
-        ),
+        path=temp("<resources>/automatic/land/raw_gadm_{country}_{subtype}.parquet"),
     log:
         "<logs>/{country}/download_country_gadm_{subtype}.log",
     conda:

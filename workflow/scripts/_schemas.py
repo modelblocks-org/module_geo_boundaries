@@ -6,6 +6,7 @@ from shapely.validation import make_valid
 
 class ShapesSchema(pa.DataFrameModel):
     """Schema for geographic shapes."""
+
     class Config:
         coerce = True
         strict = True
@@ -40,6 +41,7 @@ class ShapesSchema(pa.DataFrameModel):
     @pa.check("geometry", element_wise=True)
     def check_geometries(cls, geom):
         return (geom is not None) and (not geom.is_empty) and geom.is_valid
+
 
 class EEZSchema(ShapesSchema):
     """Schema for marine shapes."""

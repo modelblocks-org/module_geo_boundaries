@@ -1,5 +1,6 @@
 """Rules used to construct the final dataset."""
 
+
 rule build_country:
     input:
         land=lambda wc: f"<resources>/automatic/land/{get_country_filename(wc.country)}.parquet",
@@ -10,7 +11,7 @@ rule build_country:
             "<resources>/automatic/country/{country}.png",
             caption="../report/build_country.rst",
             category="Module Geo-Boundaries",
-            subcategory="Combined countries"
+            subcategory="Combined countries",
         ),
     log:
         "<logs>/{country}/build_country.log",
@@ -18,7 +19,7 @@ rule build_country:
         "../envs/shape.yaml"
     params:
         crs=config["crs"],
-        voronoi=internal["voronoi_eez"] | config.get("voronoi_eez", {})
+        voronoi=internal["voronoi_eez"] | config.get("voronoi_eez", {}),
     message:
         "{wildcards.country}: build combined land and marine polygons."
     script:

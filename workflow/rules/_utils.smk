@@ -1,5 +1,6 @@
 """Utility functions for snakemake rule handling."""
 
+
 def get_country_filename(country: str):
     """Build unique file names to avoid overwriting source files."""
     source = config["countries"][country]["source"]
