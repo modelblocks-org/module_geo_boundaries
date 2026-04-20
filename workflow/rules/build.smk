@@ -28,19 +28,16 @@ rule build_country:
 rule build_combined_area:
     input:
         countries=[
-            f"<resources>/automatic/land/{get_country_filename(country)}.parquet"
-            for country in config["countries"]
-        ],
-        marine=[
-            f"<resources>/automatic/eez/{country}.parquet"
+            f"<resources>/automatic/country/{country}.parquet"
             for country in config["countries"]
         ],
     output:
         combined="<shapes>",
         plot=report(
             "<results>/shapes.png",
-            caption="../report/results.rst",
-            category="Combined area",
+            caption="../report/build_combined_area.rst",
+            category="Module Geo-Boundaries",
+            subcategory="Combined area",
         ),
     log:
         "<logs>/build_combined_area.log",

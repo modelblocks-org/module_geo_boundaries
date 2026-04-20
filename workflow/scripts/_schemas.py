@@ -27,7 +27,6 @@ class ShapesSchema(pa.DataFrameModel):
     parent_name: Series[str]
     "Human-readable name in the parent dataset."
 
-    @classmethod
     @pa.dataframe_parser
     def fix_geometries(cls, df):
         """Attempt to correct empty or malformed geometries."""

@@ -33,6 +33,7 @@ include: "rules/build.smk"
 
 # Add all files to be delivered alongside the workflow here
 workflow.source_path("scripts/_schemas.py")
+workflow.source_path("scripts/_utils.py")
 
 
 rule all:

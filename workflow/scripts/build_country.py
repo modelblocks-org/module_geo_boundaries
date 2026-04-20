@@ -6,11 +6,9 @@ from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 import _schemas
+import _utils
 import geopandas as gpd
 import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 from pyproj import CRS
 from shapely import voronoi_polygons
 from shapely.geometry import (
@@ -149,7 +147,7 @@ def _split_one_maritime(
 def split_maritime_by_shoreline_voronoi(
     shapes: gpd.GeoDataFrame,
     *,
-    crs: dict[str, str],
+    crs: dict[str, CRS],
     sample_spacing: float = 10_000.0,
     coverage_area_tolerance: float = 1.0,
 ) -> gpd.GeoDataFrame:
@@ -174,12 +172,13 @@ def split_maritime_by_shoreline_voronoi(
     ]
 
     result = pd.concat([land, *split_maritime], ignore_index=True)
-
-    return result.to_crs(crs["geographic"])
+    result = result.to_crs(crs["geographic"])
+    result.geometry = result.geometry.buffer(0)
+    return result
 
 
 def combine_shapes(
-    land: gpd.GeoDataFrame, maritime: gpd.GeoDataFrame, geo_crs: str
+    land: gpd.GeoDataFrame, maritime: gpd.GeoDataFrame, geo_crs: CRS
 ) -> gpd.GeoDataFrame:
     """Combine land and marine shapes."""
     combined = land.copy().to_crs(geo_crs)
@@ -195,24 +194,10 @@ def combine_shapes(
     return combined
 
 
-def plot_combined_area(combined: gpd.GeoDataFrame, crs: str) -> tuple[Figure, Axes]:
-    """Generate a nice figure of the resulting file."""
-    gdf = combined.copy().to_crs(crs)
-    fig, ax = plt.subplots(layout="constrained")
-    gdf.boundary.plot(ax=ax, color="black", lw=0.5)
-    ax = gdf.plot(ax=ax, column="shape_class", legend=False)
-    ax.set(xticks=[], yticks=[], xlabel="", ylabel="")
-
-    return fig, ax
-
 
 def main() -> None:
     """Main snakemake process."""
-    crs = snakemake.params.crs
-    if not CRS.from_user_input(crs["projected"]).is_projected:
-        raise ValueError(f"CRS must be projected. Got {crs['projected']!r}.")
-    if not CRS.from_user_input(crs["geographic"]).is_geographic:
-        raise ValueError(f"CRS must be geographic. Got {crs['geographic']!r}.")
+    crs = _utils.check_crs_config(snakemake.params.crs)
 
     country = snakemake.wildcards.country
     land = _schemas.ShapesSchema.validate(gpd.read_parquet(snakemake.input.land))
@@ -235,7 +220,7 @@ def main() -> None:
         shapes = _schemas.ShapesSchema.validate(shapes)
     shapes.to_parquet(snakemake.output.country)
 
-    fig, _ = plot_combined_area(shapes, crs["projected"])
+    fig, _ = _utils.plot_shapes(shapes, crs["projected"])
     fig.suptitle(f"{country} shapes")
     fig.savefig(snakemake.output.plot, dpi=200, bbox_inches="tight")
 
