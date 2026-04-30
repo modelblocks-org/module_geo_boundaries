@@ -1,3 +1,6 @@
 # Module settings that users cannot modify.
 nuts:
   epsg: 3035  # will be converted later to the user-requested epsg
+voronoi_eez: # defaults for Voronoi EEZ splitting
+  enabled: false
+  sample_spacing: 10000

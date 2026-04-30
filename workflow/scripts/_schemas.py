@@ -7,6 +7,10 @@ from shapely.validation import make_valid
 class ShapesSchema(pa.DataFrameModel):
     """Schema for geographic shapes."""
 
+    class Config:
+        coerce = True
+        strict = True
+
     shape_id: Series[str] = pa.Field(unique=True)
     "A unique identifier for this shape."
     country_id: Series[str]
@@ -38,7 +42,9 @@ class ShapesSchema(pa.DataFrameModel):
     def check_geometries(cls, geom):
         return (geom is not None) and (not geom.is_empty) and geom.is_valid
 
-    class Config:
-        # top-level schema options from your YAML
-        coerce = True
-        strict = True
+
+class EEZSchema(ShapesSchema):
+    """Schema for marine shapes."""
+
+    contested: Series[bool]
+    """Specifies if the EEZ is contested."""
