@@ -1,6 +1,7 @@
 # Check for changes in the upstream template. If changes are found, an issue is created
 name: Template check.
 on:
+  workflow_dispatch: 
   schedule:
     - cron: '0 0 1 * *' # Runs at 00:00 UTC on the 1st day of every month
 
