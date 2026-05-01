@@ -6,4 +6,7 @@ on:
 
 jobs:
   copier-update:
+    permissions:
+      contents: read
+      issues: write
     uses: modelblocks-org/data-module-template/.github/workflows/template-check-version.yml@latest
