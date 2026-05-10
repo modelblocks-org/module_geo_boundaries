@@ -22,7 +22,7 @@ and the `snakemake` [documentation](https://snakemake.readthedocs.io/en/stable/s
 Data processing steps:
 
 <p align="center">
-  <img src="./figures/rulegraph.png" width="60%">
+  <img src="./figures/architecture.drawio.png" width="100%">
 </p>
 
 
