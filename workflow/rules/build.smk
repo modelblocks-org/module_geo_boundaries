@@ -47,7 +47,7 @@ rule build_combined_area:
     params:
         crs=config["crs"],
         countries=sorted([i for i in config["countries"]]),
-        sources=sorted(set([i["source"] for i in config["countries"].values()]))
+        sources=sorted(set([i["source"] for i in config["countries"].values()])),
     message:
         "Combine land and marine polygons."
     script:
