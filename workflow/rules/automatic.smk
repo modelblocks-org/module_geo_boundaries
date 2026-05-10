@@ -12,7 +12,7 @@ rule download_country_overture:
     conda:
         "../envs/shape.yaml"
     params:
-        version=config["overture_release"],
+        version=config.get("overture_release", internal["overture_release"]),
     message:
         "Download '{wildcards.country}_{wildcards.subtype}' dataset from Overture Maps."
     script:
@@ -83,7 +83,12 @@ rule standardise_country_nuts:
 rule download_marine_eez_area:
     output:
         path="<resources>/automatic/eez/{country}.parquet",
-        plot="<resources>/automatic/eez/{country}.png",
+        plot=report(
+            "<resources>/automatic/eez/{country}.png",
+            caption="../report/download_marine_eez_area.rst",
+            category="Module Geo-Boundaries",
+            subcategory="EEZ area",
+        ),
     log:
         "<logs>/{country}/download_marine_eez_area.log",
     conda:

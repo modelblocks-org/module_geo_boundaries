@@ -138,7 +138,16 @@ def plot(gdf: gpd.GeoDataFrame, country: str):
     """Simple plot of the shape."""
     fig, ax = plt.subplots(layout="constrained")
     if gdf.empty:
-        ax.set_title(f"{country!r} has no EEZ")
+        ax.text(
+            0.5,
+            0.5,
+            f"{country!r} has no EEZ",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            fontsize=24,
+        )
+        ax.set_axis_off()
     else:
         gdf.plot(
             "contested",
@@ -150,7 +159,6 @@ def plot(gdf: gpd.GeoDataFrame, country: str):
                 "loc": "upper left",
             },
         )
-        ax.set_title(f"{country!r}: EEZ")
     return fig, ax
 
 

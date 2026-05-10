@@ -80,7 +80,6 @@ def main() -> None:
     combined.to_parquet(snakemake.output.combined)
 
     fig, _ = _utils.plot_shapes(combined, crs["projected"])
-    fig.suptitle("Combined shapes")
     fig.savefig(snakemake.output.plot, dpi=200, bbox_inches="tight")
 
 

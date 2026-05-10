@@ -1,13 +1,14 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 $defs:
-  epsgCode:
+  crsCode:
     anyOf:
+      # Compact authority:code, e.g. EPSG:4326, OGC:CRS84, ESRI:102003
       - type: string
-        pattern: '^(?:[eE][pP][sS][gG]):\d{4,5}$'
+        pattern: '^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$'
+      # Optional legacy shorthand for numeric codes
       - type: integer
-        minimum: 1000
-        maximum: 99999
+        minimum: 1
 
 description: "Schema for user-provided configuration files."
 type: object
@@ -19,11 +20,11 @@ properties:
       projected:
         description: "Projected CRS code (for area and length calculation)."
         allOf:
-          - $ref: '#/$defs/epsgCode'
+          - $ref: '#/$defs/crsCode'
       geographic:
         description: "Geographic CRS code (for latitude / longitude positioning)."
         allOf:
-          - $ref: '#/$defs/epsgCode'
+          - $ref: '#/$defs/crsCode'
     required:
       - projected
       - geographic
@@ -88,6 +89,7 @@ properties:
       - A specific release string in the form of 'yyyy-mm-dd.x'.
       - A request for the latest release in the form of 'latest'.
     type: string
+    default: "latest"
     pattern: "^(?:latest|(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\.\\d+)$"
   voronoi_eez:
     description: >

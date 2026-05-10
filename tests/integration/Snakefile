@@ -11,9 +11,9 @@ module module_geo_boundaries:
         # Redirect specific module results (outputs)
         shapes="results/outputs/shapes.parquet",
         # Redirect module intermediate files
-        logs="resources/geo_boundaries/logs",
-        resources="resources/geo_boundaries/resources",
-        results="resources/geo_boundaries/results",
+        logs="resources/module/logs",
+        resources="resources/module/resources",
+        results="resources/module/results",
     snakefile:
         "../../workflow/Snakefile"
     config:

@@ -220,7 +220,6 @@ def main() -> None:
     shapes.to_parquet(snakemake.output.country)
 
     fig, _ = _utils.plot_shapes(shapes, crs["projected"])
-    fig.suptitle(f"{country} shapes")
     fig.savefig(snakemake.output.plot, dpi=200, bbox_inches="tight")
 
 

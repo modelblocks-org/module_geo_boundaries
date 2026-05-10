@@ -7,13 +7,15 @@ from typing import TYPE_CHECKING, Any
 
 import boto3
 import duckdb
+import geopandas as gpd
 import pycountry
+from _schemas import ShapesSchema
 from botocore import UNSIGNED
 from botocore.config import Config
 
 if TYPE_CHECKING:
     snakemake: Any
-sys.stderr = open(snakemake.log[0], "w")
+
 
 S3_REGION = "us-west-2"
 S3_BUCKET = f"overturemaps-{S3_REGION}"
@@ -133,10 +135,35 @@ def download_country_overture(country: str, subtype: str, version: str, path: st
     )
 
 
-if __name__ == "__main__":
+def validate_country_overture(
+    path: str, country: str, subtype: str, version: str
+) -> None:
+    """Run quick checks against our schema."""
+    gdf = gpd.read_parquet(path)
+    if gdf.empty:
+        raise ValueError(
+            f"Invalid request for '{country}-{subtype}-{version}'. "
+            "Please evaluate your request at https://overturemaps.org/."
+        )
+    ShapesSchema.validate(gdf)
+
+
+def main() -> None:
+    """Main snakemake process."""
     download_country_overture(
         country=snakemake.wildcards.country,
         subtype=snakemake.wildcards.subtype,
         version=snakemake.params.version,
         path=snakemake.output.path,
     )
+    validate_country_overture(
+        country=snakemake.wildcards.country,
+        subtype=snakemake.wildcards.subtype,
+        version=snakemake.params.version,
+        path=snakemake.output.path,
+    )
+
+
+if __name__ == "__main__":
+    sys.stderr = open(snakemake.log[0], "w")
+    main()

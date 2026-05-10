@@ -1,5 +1,4 @@
 # A minimal example of how to configure this module
-overture_release: "latest"
 voronoi_eez:
   enabled: True
   sample_spacing: 10000
@@ -7,6 +6,9 @@ crs:
   projected: "epsg:3035"
   geographic: "epsg:4326"
 countries:
+  "ALB":
+    subtype: "1"
+    source: "gadm"
   "AUT":
     subtype: "1"
     source: "gadm"
@@ -16,7 +18,10 @@ countries:
   "BGR":
     subtype: "1"
     source: "gadm"
-  "HRV":
+  "BIH":
+    subtype: "1"
+    source: "gadm"
+  "CHE":
     subtype: "1"
     source: "gadm"
   "CYP":
@@ -25,11 +30,18 @@ countries:
   "CZE":
     subtype: "1"
     source: "gadm"
+  "DEU":
+    subtype: "1"
+    source: "gadm"
   "DNK":
-    subtype: "2"
+    subtype: "1"
     source: "nuts"
-    resolution: 03M
+    resolution: 01M
     year: 2024
+  "ESP":
+    subtype: "1"
+    source: "gadm"
+    extra_eez: 8364
   "EST":
     subtype: "1"
     source: "gadm"
@@ -39,13 +51,22 @@ countries:
   "FRA":
     subtype: "1"
     source: "gadm"
-  "DEU":
+  "GBR":
+    subtype: "region"
+    source: "overture"
+  "GGY":
     subtype: "1"
     source: "gadm"
   "GRC":
     subtype: "1"
     source: "gadm"
+  "HRV":
+    subtype: "1"
+    source: "gadm"
   "HUN":
+    subtype: "1"
+    source: "gadm"
+  "IMN":
     subtype: "1"
     source: "gadm"
   "IRL":
@@ -54,7 +75,7 @@ countries:
   "ITA":
     subtype: "1"
     source: "gadm"
-  "LVA":
+  "JEY":
     subtype: "1"
     source: "gadm"
   "LTU":
@@ -63,39 +84,7 @@ countries:
   "LUX":
     subtype: "1"
     source: "gadm"
-  "NLD":
-    subtype: "region"
-    source: "overture"
-  "POL":
-    subtype: "1"
-    source: "gadm"
-  "PRT":
-    subtype: "2"
-    source: "nuts"
-    resolution: 03M
-    year: 2024
-  "ROU":
-    subtype: "1"
-    source: "gadm"
-  "SVK":
-    subtype: "1"
-    source: "gadm"
-  "SVN":
-    subtype: "1"
-    source: "gadm"
-  "ESP":
-    subtype: "1"
-    source: "gadm"
-  "SWE":
-    subtype: "1"
-    source: "gadm"
-  "GBR":
-    subtype: "region"
-    source: "overture"
-  "ALB":
-    subtype: "1"
-    source: "gadm"
-  "BIH":
+  "LVA":
     subtype: "1"
     source: "gadm"
   "MKD":
@@ -104,12 +93,36 @@ countries:
   "MNE":
     subtype: "1"
     source: "gadm"
+  "NLD":
+    subtype: "region"
+    source: "overture"
   "NOR":
+    subtype: "1"
+    source: "gadm"
+  "POL":
+    subtype: "1"
+    source: "gadm"
+  "PRT":
+    subtype: "1"
+    source: "nuts"
+    resolution: 01M
+    year: 2024
+    extra_eez: [8361, 8363]
+  "ROU":
     subtype: "1"
     source: "gadm"
   "SRB":
     subtype: "1"
     source: "gadm"
-  "CHE":
+  "SVK":
+    subtype: "1"
+    source: "gadm"
+  "SVN":
+    subtype: "1"
+    source: "gadm"
+  "SWE":
+    subtype: "1"
+    source: "gadm"
+  "XKO":
     subtype: "1"
     source: "gadm"

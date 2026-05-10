@@ -4,3 +4,4 @@ nuts:
 voronoi_eez: # defaults for Voronoi EEZ splitting
   enabled: false
   sample_spacing: 10000
+overture_release: "latest"

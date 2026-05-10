@@ -1,5 +1,4 @@
 module_geo_boundaries:
-  overture_release: "latest"
   crs:
     projected: "epsg:3857"
     geographic: "epsg:4326"
