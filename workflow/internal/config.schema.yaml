@@ -15,7 +15,7 @@ $defs:
     properties:
       subtype:
         description: >
-          "Regional aggregation to gather (e.g., '0', '1', or '2' for GADM). Names vary per dataset."
+          "Regional aggregation to download. Varies per dataset."
         anyOf:
           - type: integer
           - type: string
@@ -48,12 +48,26 @@ $defs:
     properties:
       source:
         const: "gadm"
+      subtype:
+        description: "GADM administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3, 4]
+          - type: string
+            enum: ["0", "1", "2", "3", "4"]
 
   countryNuts:
     type: object
     properties:
       source:
         const: "nuts"
+      subtype:
+        description: "NUTS administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3]
+          - type: string
+            enum: ["0", "1", "2", "3"]
       resolution:
         description: "Resolution for NUTS source."
         type: string
@@ -70,6 +84,13 @@ $defs:
     properties:
       source:
         const: "geoboundaries"
+      subtype:
+        description: "geoBoundaries administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3, 4, 5]
+          - type: string
+            enum: ["0", "1", "2", "3", "4", "5"]
       release_type:
         description: "geoBoundaries release type (each with different licensing)."
         type: string

@@ -70,7 +70,7 @@ rule download_harmonised_eez:
         path="<resources>/automatic/eez/{country}.parquet",
         plot=report(
             "<resources>/automatic/eez/{country}.png",
-            caption="../report/download_marine_eez_area.rst",
+            caption="../report/download_harmonised_eez.rst",
             category="Module Geo-Boundaries",
             subcategory="EEZ area",
         ),

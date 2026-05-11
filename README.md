@@ -22,15 +22,15 @@ and the `snakemake` [documentation](https://snakemake.readthedocs.io/en/stable/s
 Data processing steps:
 
 <p align="center">
-  <img src="./figures/architecture.drawio.png" width="100%">
+  <img src="./figures/architecture.drawio.png" width="90%">
 </p>
 
 
 1. The configuration file is read to identify the datasets to use as well as the specific countries and regional aggregation (`subtype` in the configuration) to process.
-    - Country area data: [GADM](https://gadm.org/), [Overture Maps](https://overturemaps.org/) and [NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics) divisions are supported.
-    - Exclusive Economic Zone (EEZ) data: [Marine regions](https://www.marineregions.org/).
+    - Country landmass data: [eurostat NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics), [GADM](https://gadm.org/), [geoBoundaries](https://www.geoboundaries.org/), and [Overture Maps](https://overturemaps.org/) are supported.
+    - Exclusive Economic Zone (EEZ) data: [MarineRegions.org](https://www.marineregions.org/).
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
-    - Contested regions are removed at this stage.
+    - If identified, contested regions are removed at this stage.
     - Land is clipped using maritime Exclusive Economic Zones (EEZ).
     - Optionally, a Voronoi algorithm is run to separate EEZ areas to fit subnational regions.
 3. Each country file is combined and then clipped using its neighbours to minimise overlapping polygons.
@@ -40,7 +40,7 @@ Data processing steps:
 > Use the references at the bottom of this page for more details.
 
 > [!CAUTION]
-> To increase the replicability of your workflow, we recommend using NUTS and GADM as sources whenever possible as they are more stable than Overture Maps.
+> To increase the replicability of your workflow, we recommend using NUTS and geoBoundaries as sources whenever possible as they have more stable hosting methods than Overture Maps and GADM.
 
 ## Configuration
 <!-- Please describe how to configure this module below -->
@@ -86,11 +86,15 @@ snakemake --use-conda --cores 2  # run the workflow!
 This module is based on the following research and datasets.
 We encourage users to cite both the original source and our workflow.
 
+- eurostat NUTS (various years). Nomenclature of territorial units for statistics (NUTS).
+    - License: reuse is authorised provided the source is acknowledged. <https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Copyright/licence_policy>
 - GADM 4.1. (2018). Global Administrative Areas (GADM).
     - License: GADM data is freely available for academic and non-commercial use. <https://gadm.org/license.html>.
-- NUTS (various years). Nomenclature of territorial units for statistics (NUTS).
-    - License: reuse is authorised provided the source is acknowledged. <https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Copyright/licence_policy>
-- Overture Maps Divisions database (most recent version). Overture Maps Foundation.
-    - License: ODbL. See <https://docs.overturemaps.org/attribution/> and <https://opendatacommons.org/licenses/odbl/summary/> for details.
+- geoBoundaries (most recent version). William & Mary geoLab.
+    - License: varies per dataset type (from CC-BY 4.0 compliant to non-commercial use only).
+    Consult their documentation for details.
+    <https://www.geoboundaries.org/>.
 - Marine Regions World EEZ v12 (2023). Flanders Marine Institute (MarineRegions.org).
     - License: CC-By. See <https://www.marineregions.org/disclaimer.php>.
+- Overture Maps Divisions database (most recent version). Overture Maps Foundation.
+    - License: ODbL. See <https://docs.overturemaps.org/attribution/> and <https://opendatacommons.org/licenses/odbl/summary/> for details.

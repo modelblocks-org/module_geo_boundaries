@@ -8,31 +8,40 @@ crs:
 countries:
   "ALB":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "AUT":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "BEL":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "BGR":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "BIH":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "CHE":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "CYP":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "CZE":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "DEU":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "DNK":
     subtype: "1"
     source: "nuts"
@@ -40,68 +49,82 @@ countries:
     year: 2024
   "ESP":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
     extra_eez: 8364
   "EST":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "FIN":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "FRA":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "GBR":
     subtype: "region"
     source: "overture"
   "GGY":
-    subtype: "1"
-    source: "gadm"
+    subtype: "0"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "GRC":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "HRV":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "HUN":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "IMN":
-    subtype: "1"
-    source: "gadm"
+    subtype: "0"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "IRL":
     subtype: "region"
     source: "overture"
   "ITA":
     subtype: "1"
-    source: "gadm"
-  "JEY":
-    subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "LTU":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "LUX":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "LVA":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "MKD":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "MNE":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "NLD":
     subtype: "region"
     source: "overture"
   "NOR":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "POL":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "PRT":
     subtype: "1"
     source: "nuts"
@@ -110,19 +133,25 @@ countries:
     extra_eez: [8361, 8363]
   "ROU":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "SRB":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "SVK":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "SVN":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "SWE":
     subtype: "1"
-    source: "gadm"
-  "XKO":
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "XKX":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"

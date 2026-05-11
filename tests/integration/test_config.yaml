@@ -5,7 +5,8 @@ module_geo_boundaries:
   countries:
     "MNE":
       subtype: "0"
-      source: "gadm"
+      source: "geoboundaries"
+      release_type: "gbOpen"
     "SVK":
       subtype: "country"
       source: "overture"
