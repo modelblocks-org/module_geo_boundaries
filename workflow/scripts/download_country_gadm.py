@@ -1,15 +1,16 @@
 """Download data from the GADM database.
 
 Built for version 4.1 of the dataset.
-
 https://gadm.org/index.html
 """
 
 import sys
+import tempfile
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import geopandas as gpd
-import requests
+from _utils import DownloadTimeouts, download_file
 
 if TYPE_CHECKING:
     snakemake: Any
@@ -21,32 +22,34 @@ GADM_URL = (
 GADM_CRS = "EPSG:4326"
 
 
-def download_country_gadm(country: str, subtype: str) -> gpd.GeoDataFrame:
-    """Download country and save it to parquet."""
-    session = requests.Session()
-    gdf: gpd.GeoDataFrame | None = None
+def download_country_gadm(country: str, subtype: str, timeouts: DownloadTimeouts) -> gpd.GeoDataFrame:
+    """Attempts to download country GADM data in .json or zipped json."""
+    last_error: Exception | None = None
 
     for zip_ext in (".zip", ""):
-        uri = GADM_URL.format(country=country, subtype=subtype, zip=zip_ext)
+        url = GADM_URL.format(country=country, subtype=subtype, zip=zip_ext)
         try:
-            r = session.get(uri, stream=True, timeout=30)
-            r.raise_for_status()
-            # URL is valid, read and format
-            gdf = gpd.read_file(uri).to_crs(GADM_CRS)
-            break
-        except Exception:
-            continue
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                tmp_path = Path(tmp_dir) / f"download.json{zip_ext}"
 
-    if gdf is None:
-        raise RuntimeError(f"Could not fetch GADM request for {country!r}:{subtype!r}.")
+                download_file(url, tmp_path, timeouts)
+                gdf = gpd.read_file(tmp_path)
+                if gdf.empty:
+                    raise RuntimeError(f"Downloaded empty GADM file from {url!r}.")
+                return gdf.to_crs(GADM_CRS)
 
-    return gdf
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError(
+        f"Could not fetch GADM request for {country!r}:{subtype!r}."
+    ) from last_error
 
 
 def main():
     """Main snakemake process."""
+    timeouts = DownloadTimeouts(**snakemake.params.timeouts)
     country = download_country_gadm(
-        snakemake.wildcards.country, snakemake.wildcards.subtype
+        snakemake.wildcards.country, snakemake.wildcards.subtype, timeouts
     )
     country.to_parquet(snakemake.output.path)
 

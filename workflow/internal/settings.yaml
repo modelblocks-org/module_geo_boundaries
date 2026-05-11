@@ -1,7 +1,10 @@
 # Module settings that users cannot modify.
-nuts:
-  epsg: 3035  # will be converted later to the user-requested epsg
 voronoi_eez: # defaults for Voronoi EEZ splitting
   enabled: false
   sample_spacing: 10000
+timeouts:
+  max_retries: 3
+  connect_seconds: 15
+  read_seconds: 30
+  initial_retry_seconds: 5
 overture_release: "latest"

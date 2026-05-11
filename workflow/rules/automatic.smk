@@ -13,6 +13,7 @@ rule download_country_overture:
         "../envs/shape.yaml"
     params:
         version=config.get("overture_release", internal["overture_release"]),
+    localrule: True
     message:
         "Download '{wildcards.country}_{wildcards.subtype}' dataset from Overture Maps."
     script:
@@ -26,6 +27,9 @@ rule download_country_gadm:
         "<logs>/{country}/download_country_gadm_{subtype}.log",
     conda:
         "../envs/shape.yaml"
+    localrule: True
+    params:
+        timeouts=internal["timeouts"],
     message:
         "Download '{wildcards.country}_{wildcards.subtype}' dataset from GADM."
     script:
@@ -58,7 +62,8 @@ rule download_nuts:
     conda:
         "../envs/shape.yaml"
     params:
-        epsg=internal["nuts"]["epsg"],
+        timeouts=internal["timeouts"],
+    localrule: True
     message:
         "Download '{wildcards.subtype}_{wildcards.resolution}_{wildcards.year}' from NUTS."
     script:
@@ -95,6 +100,8 @@ rule download_marine_eez_area:
         "../envs/shape.yaml"
     params:
         extra_eez=lambda wc: config["countries"][wc.country].get("extra_eez", []),
+        timeouts=internal["timeouts"],
+    localrule: True
     message:
         "Download and standardise '{wildcards.country}' EEZ dataset."
     script:

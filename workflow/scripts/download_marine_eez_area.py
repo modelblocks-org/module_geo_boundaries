@@ -1,12 +1,17 @@
 """Download data from the Marineregions database.
 
 https://www.marineregions.org/
+Constructs EEZ datasets per country
+- In cases where no EEZ is available for a country an empty dataframe will be saved.
+- Optionally, additional EEZs may be downloaded if specified in `extra_eez`.
+    - These should result in an error if the code is invalid.
 """
 
 import sys
 from typing import TYPE_CHECKING, Any
 
 import _schemas
+import _utils
 import geopandas as gpd
 import pandas as pd
 import requests
@@ -17,6 +22,7 @@ if TYPE_CHECKING:
 
 WFS_BASE = "https://geo.vliz.be/geoserver/MarineRegions/wfs"
 WFS_VERSION = "2.0.0"
+CRS_MARINE_REGIONS = "EPSG:4326"
 
 
 def _raise_for_geoserver_exception(response: requests.Response) -> None:
@@ -37,8 +43,45 @@ def _raise_for_geoserver_exception(response: requests.Response) -> None:
         )
 
 
+def _get_wfs_response(
+    params: dict[str, str], timeouts: _utils.DownloadTimeouts
+) -> requests.Response:
+    """Call the MarineRegions WFS API, retrying transient request failures."""
+    max_retries = timeouts.max_retries
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.get(
+                WFS_BASE,
+                params=params,
+                timeout=timeouts.request_timeout,
+            )
+
+            if response.status_code in _utils.RETRY_STATUS_CODES:
+                if attempt < max_retries:
+                    _utils.retry_wait_seconds(attempt, timeouts.initial_retry_seconds)
+                    continue
+                _raise_for_geoserver_exception(response)
+                response.raise_for_status()
+
+            if response.status_code >= 400:
+                _raise_for_geoserver_exception(response)
+                response.raise_for_status()
+
+            _raise_for_geoserver_exception(response)
+            return response
+
+        except _utils.RETRY_EXCEPTIONS as exc:
+            if attempt == max_retries:
+                raise RuntimeError(
+                    f"Failed MarineRegions WFS request after {max_retries} retries."
+                ) from exc
+            _utils.retry_wait_seconds(attempt, timeouts.initial_retry_seconds)
+
+    raise RuntimeError(f"Failed MarineRegions WFS request after {max_retries} retries.")
+
+
 def get_eez_by_cql(
-    cql_filter: str, *, srs_name: str = "EPSG:4326", timeout: int = 180
+    cql_filter: str, timeouts: _utils.DownloadTimeouts
 ) -> gpd.GeoDataFrame | None:
     """Fetch EEZ polygons using a raw WFS CQL filter."""
     params = {
@@ -48,49 +91,25 @@ def get_eez_by_cql(
         "typeNames": "eez",
         "outputFormat": "application/json",
         "cql_filter": cql_filter,
-        "srsName": srs_name,
+        "srsName": CRS_MARINE_REGIONS,
     }
-
-    response = requests.get(WFS_BASE, params=params, timeout=timeout)
-
-    if response.status_code >= 400:
-        # Attempt to explain the failure, otherwise just raise status.
-        _raise_for_geoserver_exception(response)
-        response.raise_for_status()
-    # Attempt to explain 200 failures too.
-    _raise_for_geoserver_exception(response)
+    response = _get_wfs_response(params, timeouts)
 
     data = response.json()
     if "features" not in data:
         raise RuntimeError(
-            f"Unexpected JSON payload (no 'features'). First keys: {list(data)[:20]}"
+            f"Unexpected JSON payload from MarineRegions. First keys: {list(data)[:20]}"
         )
 
     result = None
     if data["features"]:
         # Let geopandas build the frame, CRS will match request
-        result = gpd.GeoDataFrame.from_features(data["features"], crs=srs_name)
+        result = gpd.GeoDataFrame.from_features(
+            data["features"], crs=CRS_MARINE_REGIONS
+        )
         if result.empty:
             result = None
     return result
-
-
-def get_country_eez_by_iso3(
-    iso3: str,
-    *,
-    id_col: str = "iso_ter1",
-    srs_name: str = "EPSG:4326",
-    timeout: int = 180,
-) -> gpd.GeoDataFrame | None:
-    """Fetch EEZ polygons by ISO3 code using WFS + CQL."""
-    return get_eez_by_cql(f"{id_col}='{iso3}'", srs_name=srs_name, timeout=timeout)
-
-
-def get_country_eez_by_mrgid(
-    mrgid: int, *, srs_name: str = "EPSG:4326", timeout: int = 180
-) -> gpd.GeoDataFrame | None:
-    """Fetch EEZ polygons by Marine Regions ID."""
-    return get_eez_by_cql(f"mrgid={mrgid}", srs_name=srs_name, timeout=timeout)
 
 
 def transform_to_schema(
@@ -162,33 +181,45 @@ def plot(gdf: gpd.GeoDataFrame, country: str):
     return fig, ax
 
 
-def main() -> None:
-    """Main snakemake process."""
-    iso3 = snakemake.wildcards.country
-    extra_eez = snakemake.params.extra_eez
-    if not isinstance(extra_eez, list):
-        extra_eez = [extra_eez]
+def download_eezs(
+    country: str, extra_eez: list[str], timeouts: _utils.DownloadTimeouts
+) -> gpd.GeoDataFrame:
+    """Download EEZ data as requested.
 
-    eez_gdfs = []
+    If no EEZ exists for a country, the dataframe will be empty.
+    """
+    eez_gdfs: list[gpd.GeoDataFrame] = []
 
-    iso3_eez = get_country_eez_by_iso3(iso3)
+    iso3_eez = get_eez_by_cql(f"iso_ter1='{country}'", timeouts)
     if iso3_eez is not None:
         eez_gdfs.append(iso3_eez)
 
     for mrgid in extra_eez:
-        extra_gdf = get_country_eez_by_mrgid(int(mrgid))
+        extra_gdf = get_eez_by_cql(f"mrgid={int(mrgid)}", timeouts)
         if extra_gdf is None:
             raise RuntimeError(f"Configured extra_eez {mrgid!r} returned no features")
         eez_gdfs.append(extra_gdf)
 
     combined_gdf = None
     if eez_gdfs:
-        combined_gdf = pd.concat([i for i in eez_gdfs if i is not None])
+        combined_gdf = pd.concat(eez_gdfs, ignore_index=True)
 
-    gdf = transform_to_schema(combined_gdf, iso3)
+    return transform_to_schema(combined_gdf, country)
+
+
+def main() -> None:
+    """Main snakemake process."""
+    country = snakemake.wildcards.country
+    extra_eez = snakemake.params.extra_eez
+
+    timeouts = _utils.DownloadTimeouts(**snakemake.params.timeouts)
+    if not isinstance(extra_eez, list):
+        extra_eez = [extra_eez]
+
+    gdf = download_eezs(country, extra_eez, timeouts)
     gdf.to_parquet(snakemake.output.path)
 
-    fig, _ = plot(gdf, iso3)
+    fig, _ = plot(gdf, country)
     fig.savefig(snakemake.output.plot, bbox_inches="tight", dpi=200)
 
 
