@@ -15,11 +15,13 @@ countries:
     subtype: "country"
     source: "overture"
   NLD:
-    subtype: "0"
-    source: "gadm"
+    subtype: 0
+    source: "geoboundaries"
+    release_type: "gbOpen"
   BEL:
-    subtype: "country"
-    source: "overture"
+    subtype: 1
+    source: "geoboundaries"
+    release_type: "gbOpen"
   CHE:
     subtype: "country"
     source: "overture"

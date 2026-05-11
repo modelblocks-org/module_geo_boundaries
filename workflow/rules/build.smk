@@ -3,7 +3,7 @@
 
 rule build_country:
     input:
-        land=lambda wc: f"<resources>/automatic/land/{get_country_filename(wc.country)}.parquet",
+        land=lambda wc: f"<resources>/automatic/{get_country_file(wc.country)}.parquet",
         maritime="<resources>/automatic/eez/{country}.parquet",
     output:
         country="<resources>/automatic/country/{country}.parquet",

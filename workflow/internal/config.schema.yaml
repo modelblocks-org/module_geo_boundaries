@@ -5,10 +5,88 @@ $defs:
     anyOf:
       # Compact authority:code, e.g. EPSG:4326, OGC:CRS84, ESRI:102003
       - type: string
-        pattern: '^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$'
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
       # Optional legacy shorthand for numeric codes
       - type: integer
         minimum: 1
+
+  countryBase:
+    type: object
+    properties:
+      subtype:
+        description: >
+          "Regional aggregation to gather (e.g., '0', '1', or '2' for GADM). Names vary per dataset."
+        anyOf:
+          - type: integer
+          - type: string
+      source:
+        description: |
+          Dataset to use as source.
+        type: string
+        enum: ["overture", "gadm", "nuts", "geoboundaries"]
+      extra_eez:
+        description: >
+          Optional. Additional EEZ zones to append to this country.
+        default: []
+        anyOf:
+          - type: integer
+          - type: array
+            items:
+              type: integer
+    required:
+      - subtype
+      - source
+
+  countryOverture:
+    type: object
+    properties:
+      source:
+        const: "overture"
+
+  countryGadm:
+    type: object
+    properties:
+      source:
+        const: "gadm"
+
+  countryNuts:
+    type: object
+    properties:
+      source:
+        const: "nuts"
+      resolution:
+        description: "Resolution for NUTS source."
+        type: string
+        pattern: "^[0-9]{2}M$"
+      year:
+        description: "Year for NUTS source."
+        type: integer
+    required:
+      - resolution
+      - year
+
+  countryGeoboundaries:
+    type: object
+    properties:
+      source:
+        const: "geoboundaries"
+      release_type:
+        description: "geoBoundaries release type (each with different licensing)."
+        type: string
+        enum: ["gbOpen", "gbHumanitarian", "gbAuthoritative"]
+    required:
+      - release_type
+
+  country:
+    type: object
+    allOf:
+      - $ref: "#/$defs/countryBase"
+      - oneOf:
+          - $ref: "#/$defs/countryOverture"
+          - $ref: "#/$defs/countryGadm"
+          - $ref: "#/$defs/countryNuts"
+          - $ref: "#/$defs/countryGeoboundaries"
+    unevaluatedProperties: false
 
 description: "Schema for user-provided configuration files."
 type: object
@@ -20,69 +98,27 @@ properties:
       projected:
         description: "Projected CRS code (for area and length calculation)."
         allOf:
-          - $ref: '#/$defs/crsCode'
+          - $ref: "#/$defs/crsCode"
       geographic:
         description: "Geographic CRS code (for latitude / longitude positioning)."
         allOf:
-          - $ref: '#/$defs/crsCode'
+          - $ref: "#/$defs/crsCode"
     required:
       - projected
       - geographic
-    additionalProperties: False
+    additionalProperties: false
+
   countries:
     description: >
       Dictionary of countries with each country code as the key.
       Country code must be in ISO alpha-3 format (e.g., MEX, CHN, DEU).
     type: object
     patternProperties:
-      "^[A-Z]{3}$":  # Keys must be exactly three uppercase letters
-        type: object
-        properties:
-          subtype:
-            description: >
-              "Regional aggregation to gather (e.g., '0', '1', or '2' for GADM). Names vary per dataset."
-            type: string
-          source:
-            description: |
-              Dataset to use as source.
-            type: string
-            enum: ["overture", "gadm", "nuts"]
-          resolution:
-            description: "Resolution for NUTS source (required if source is 'nuts')."
-            type: string
-            pattern: "^[0-9]{2}M$"
-          year:
-            description: "Year for NUTS source (required if source is 'nuts')."
-            type: integer
-          extra_eez:
-            description: >
-              Optional. Additional EEZ zones to append to this country.
-            default: []
-            anyOf:
-              - type: integer
-              - type: array
-                items:
-                  type: integer
-        required:
-          - subtype
-          - source
-        additionalProperties: false
-        allOf:
-          - if:
-              properties:
-                source:
-                  enum: ["nuts"]
-            then:
-              required:
-                - resolution
-                - year
-          - else:
-              not:
-                required:
-                  - resolution
-                  - year
+      "^[A-Z]{3}$": # Keys must be exactly three uppercase letters
+        $ref: "#/$defs/country"
     minProperties: 1
     additionalProperties: false
+
   overture_release:
     description: |
       Overture data release to use. Two options are possible:
@@ -111,6 +147,7 @@ properties:
         type: integer
         default: 10000
         minimum: 1
+
 required:
   - countries
   - crs

@@ -3,6 +3,7 @@ from pandera.typing.geopandas import GeoSeries
 from pandera.typing.pandas import Series
 from shapely.validation import make_valid
 
+SUPPORTED_DATASETS = ["gadm", "overture", "marineregions", "nuts", "geoboundaries"]
 
 class ShapesSchema(pa.DataFrameModel):
     """Schema for geographic shapes."""
@@ -19,7 +20,7 @@ class ShapesSchema(pa.DataFrameModel):
     "Identifier of the shape's context."
     geometry: GeoSeries
     "Shape (multi)polygon."
-    parent: Series[str] = pa.Field(isin=["gadm", "overture", "marineregions", "nuts"])
+    parent: Series[str] = pa.Field(isin=SUPPORTED_DATASETS)
     "Parent dataset."
     parent_subtype: Series[str]
     "Region disaggregation level in the parent dataset."
