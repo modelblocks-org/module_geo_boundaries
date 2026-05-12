@@ -64,7 +64,14 @@ def _iter_lines(geom: BaseGeometry) -> Iterator[LineString]:
 
 def _merge_lines(lines: list[LineString]) -> list[LineString]:
     """Merge connected line fragments into longer line components."""
-    return list(_iter_lines(linemerge(unary_union(lines)))) if lines else []
+    result: list[LineString] = []
+    if lines:
+        merged = unary_union(lines)
+        if isinstance(merged, LineString):
+            result = [merged]
+        else:
+            result = list(_iter_lines(linemerge(merged)))
+    return result
 
 
 def _sample_line_midpoints(
