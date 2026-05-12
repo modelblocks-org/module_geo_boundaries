@@ -3,7 +3,7 @@
 
 rule harmonise_geoboundaries:
     input:
-        raw=rules.download_geoboundaries.output.path
+        raw=rules.download_geoboundaries.output.path,
     output:
         path="<resources>/automatic/geoboundaries/harmonise/{country}_{subtype}_{release_type}.parquet",
     log:
@@ -21,11 +21,11 @@ rule download_harmonised_overture:
         path="<resources>/automatic/overture/harmonise/{country}_{subtype}.parquet",
     log:
         "<logs>/overture/download_and_harmonise/{country}_{subtype}.log",
+    localrule: True
     conda:
         "../envs/shape.yaml"
     params:
         version=config.get("overture_release", internal["overture_release"]),
-    localrule: True
     message:
         "Downloading harmonised '{wildcards.country}_{wildcards.subtype}' dataset from Overture Maps."
     script:
@@ -76,14 +76,13 @@ rule download_harmonised_eez:
         ),
     log:
         "<logs>/eez/download_harmonised/{country}.log",
+    localrule: True
     conda:
         "../envs/shape.yaml"
     params:
         extra_eez=lambda wc: config["countries"][wc.country].get("extra_eez", []),
         timeouts=internal["timeouts"],
-    localrule: True
     message:
         "Download and harmonise '{wildcards.country}' EEZ dataset."
     script:
         "../scripts/download_harmonised_eez.py"
-

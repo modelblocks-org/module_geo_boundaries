@@ -22,7 +22,9 @@ GADM_URL = (
 GADM_CRS = "EPSG:4326"
 
 
-def download_country_gadm(country: str, subtype: str, timeouts: DownloadTimeouts) -> gpd.GeoDataFrame:
+def download_country_gadm(
+    country: str, subtype: str, timeouts: DownloadTimeouts
+) -> gpd.GeoDataFrame:
     """Attempts to download country GADM data in .json or zipped json."""
     last_error: Exception | None = None
 

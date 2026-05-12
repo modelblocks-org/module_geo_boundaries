@@ -23,10 +23,7 @@ GEOBOUNDARIES_CRS = "EPSG:4326"
 
 
 def download_country_geoboundaries(
-    country: str,
-    subtype: str,
-    release_type: str,
-    timeouts: DownloadTimeouts,
+    country: str, subtype: str, release_type: str, timeouts: DownloadTimeouts
 ) -> gpd.GeoDataFrame:
     """Download country data from geoBoundaries.
 
@@ -34,9 +31,7 @@ def download_country_geoboundaries(
     The concrete dataset version returned in the metadata JSON response.
     """
     api_url = GEOBOUNDARIES_API_URL.format(
-        release_type=release_type,
-        country=country,
-        subtype=subtype,
+        release_type=release_type, country=country, subtype=subtype
     )
 
     with tempfile.TemporaryDirectory() as tmp_dir:

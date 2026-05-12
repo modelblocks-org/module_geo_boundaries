@@ -6,16 +6,15 @@ rule download_geoboundaries:
         path="<resources>/automatic/geoboundaries/download/{country}_{subtype}_{release_type}.parquet",
     log:
         "<logs>/geoboundaries/download/{country}_{subtype}_{release_type}.log",
+    localrule: True
     conda:
         "../envs/shape.yaml"
     params:
         timeouts=internal["timeouts"],
-    localrule: True
     message:
         "Downloading '{wildcards.country}_{wildcards.subtype}_{wildcards.release_type}' dataset from geoBoundaries."
     script:
         "../scripts/download_geoboundaries.py"
-
 
 
 rule download_gadm:
@@ -23,9 +22,9 @@ rule download_gadm:
         path="<resources>/automatic/gadm/download/{country}_{subtype}.parquet",
     log:
         "<logs>/gadm/download/{country}_{subtype}.log",
+    localrule: True
     conda:
         "../envs/shape.yaml"
-    localrule: True
     params:
         timeouts=internal["timeouts"],
     message:
@@ -39,11 +38,11 @@ rule download_nuts:
         path="<resources>/automatic/nuts/download/{subtype}_{resolution}_{year}.parquet",
     log:
         "<logs>/nuts/download/{subtype}_{resolution}_{year}.log",
+    localrule: True
     conda:
         "../envs/shape.yaml"
     params:
         timeouts=internal["timeouts"],
-    localrule: True
     message:
         "Download '{wildcards.subtype}_{wildcards.resolution}_{wildcards.year}' from NUTS."
     script:

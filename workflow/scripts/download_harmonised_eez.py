@@ -51,9 +51,7 @@ def _get_wfs_response(
     for attempt in range(max_retries + 1):
         try:
             response = requests.get(
-                WFS_BASE,
-                params=params,
-                timeout=timeouts.request_timeout,
+                WFS_BASE, params=params, timeout=timeouts.request_timeout
             )
 
             if response.status_code in _utils.RETRY_STATUS_CODES:

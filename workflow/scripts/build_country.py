@@ -282,10 +282,7 @@ def _split_one_maritime(
 
 
 def split_maritime_by_shoreline_voronoi(
-    shapes: gpd.GeoDataFrame,
-    *,
-    crs: dict[str, CRS],
-    voronoi_config: VoronoiConfig,
+    shapes: gpd.GeoDataFrame, *, crs: dict[str, CRS], voronoi_config: VoronoiConfig
 ) -> gpd.GeoDataFrame:
     """Split EEZ zones to fit shoreline land regions."""
     if not voronoi_config.enabled:

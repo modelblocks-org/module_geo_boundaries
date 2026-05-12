@@ -18,9 +18,11 @@ RETRY_EXCEPTIONS = (
     requests.exceptions.ChunkedEncodingError,
 )
 
+
 @dataclass
 class DownloadTimeouts:
     """Generic class for handling timeouts across data sources."""
+
     max_retries: int
     connect_seconds: int
     read_seconds: int
@@ -59,11 +61,7 @@ def retry_wait_seconds(
     time.sleep(timeout)
 
 
-def download_file(
-    url: str,
-    path: Path,
-    timeouts: DownloadTimeouts,
-) -> None:
+def download_file(url: str, path: Path, timeouts: DownloadTimeouts) -> None:
     """Download URL content to path, retrying transient failures."""
     max_retries = timeouts.max_retries
     for attempt in range(max_retries + 1):

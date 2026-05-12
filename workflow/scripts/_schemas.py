@@ -5,6 +5,7 @@ from shapely.validation import make_valid
 
 SUPPORTED_DATASETS = ["gadm", "overture", "marineregions", "nuts", "geoboundaries"]
 
+
 class ShapesSchema(pa.DataFrameModel):
     """Schema for geographic shapes."""
 
