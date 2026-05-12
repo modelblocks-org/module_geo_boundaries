@@ -2,6 +2,11 @@
 voronoi_eez: # defaults for Voronoi EEZ splitting
   enabled: false
   sample_spacing: 10000
+  min_samples_per_shoreline: 8
+  max_samples_per_maritime: 50000
+  include_shoreline_vertices: true
+  shoreline_search_radius: 10000
+  uncovered_area_tolerance: 1
 timeouts:
   max_retries: 3
   connect_seconds: 15

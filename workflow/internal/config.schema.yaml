@@ -162,12 +162,50 @@ properties:
         default: false
       sample_spacing:
         description: >
-          Distance between sample points for shorelines.
-          Higher for finer splits at the cost of slower processing.
+          Maximum distance between sample points for shorelines.
+          Lower for finer splits at the cost of slower processing.
           Matches the unit of the projected CRS.
         type: integer
         default: 10000
         minimum: 1
+      min_samples_per_shoreline:
+        description: >
+          Minimum number of sampled points per touching shoreline component.
+          This helps small islands influence the split even when their coastlines
+          are shorter than `sample_spacing`.
+        type: integer
+        default: 8
+        minimum: 1
+      max_samples_per_maritime:
+        description: >
+          Approximate cap for sampled shoreline points per maritime shape.
+          If exceeded, the algorithm raises the effective sample spacing and
+          skips raw shoreline vertices to keep processing bounded.
+        type: integer
+        default: 50000
+        minimum: 1
+      include_shoreline_vertices:
+        description: >
+          Include existing shoreline vertices as Voronoi generators in addition
+          to adaptive midpoint samples.
+        type: boolean
+        default: true
+      shoreline_search_radius:
+        description: >
+          Distance around maritime polygons used to find the marine-facing
+          country exterior boundary. This handles land and EEZ datasets whose
+          coastlines do not exactly coincide. Matches the unit of the projected
+          CRS.
+        type: integer
+        default: 10000
+        minimum: 0
+      uncovered_area_tolerance:
+        description: >
+          Maximum area loss permitted per EEZ polygon after splitting. An error
+          will be raised if exceeded. Matches the unit of the projected CRS.
+        type: number
+        default: 1
+        minimum: 0
 
 required:
   - countries
