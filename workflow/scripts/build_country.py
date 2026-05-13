@@ -10,6 +10,7 @@ import _schemas
 import _utils
 import geopandas as gpd
 import pandas as pd
+from matplotlib import pyplot as plt
 from pyproj import CRS
 from shapely import make_valid, voronoi_polygons
 from shapely.geometry import (
@@ -202,7 +203,7 @@ def _split_one_maritime(
     *,
     crs: int | str,
     voronoi_config: VoronoiConfig,
-) -> gpd.GeoDataFrame:
+) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Split a single maritime shape to fit the coastline."""
     if land.empty:
         raise ValueError(
@@ -233,6 +234,7 @@ def _split_one_maritime(
     if len(assigned_ids) == 1:
         # Nothing to do
         pieces = gpd.GeoDataFrame([base_row.copy()], geometry="geometry", crs=crs)
+        cells = gpd.GeoDataFrame(geometry=[], crs=crs)
     else:
         # Run Voronoi
         maritime_geometry = make_valid(maritime_row.geometry)
@@ -285,15 +287,16 @@ def _split_one_maritime(
             piece_rows.append(piece)
         pieces = gpd.GeoDataFrame(piece_rows, geometry="geometry", crs=crs)
 
-    return pieces
+    return pieces, cells
 
 
 def split_maritime_by_shoreline_voronoi(
     shapes: gpd.GeoDataFrame, *, crs: dict[str, CRS], voronoi_config: VoronoiConfig
-) -> gpd.GeoDataFrame:
+) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Split EEZ zones to fit shoreline land regions."""
+    cells = gpd.GeoDataFrame(geometry=[], crs=shapes.crs)
     if not voronoi_config.enabled:
-        return shapes
+        return shapes, cells
 
     shapes = shapes.copy().to_crs(crs["projected"])
 
@@ -303,7 +306,7 @@ def split_maritime_by_shoreline_voronoi(
     if maritime.empty:
         raise ValueError("Requested voronoi without maritime shapes.")
 
-    split_maritime = [
+    split_results = [
         _split_one_maritime(
             maritime_row,
             land.loc[land["country_id"].eq(maritime_row.country_id)],
@@ -313,10 +316,20 @@ def split_maritime_by_shoreline_voronoi(
         for maritime_row in maritime.itertuples(index=False)
     ]
 
+    split_maritime = [pieces for pieces, _ in split_results]
     result = pd.concat([land, *split_maritime], ignore_index=True)
+
+    cell_frames = [i for _, i in split_results if not i.empty]
+    if cell_frames:
+        cells = gpd.GeoDataFrame(
+            pd.concat(cell_frames, ignore_index=True),
+            geometry="geometry",
+            crs=shapes.crs,
+        )
+
     result = result.to_crs(crs["geographic"])
     result.geometry = result.geometry.buffer(0)
-    return result
+    return result, cells
 
 
 def combine_shapes(
@@ -336,6 +349,12 @@ def combine_shapes(
     return combined
 
 
+def plot_voronoi_cells(ax: _utils.Axes, cells: gpd.GeoDataFrame, crs: CRS) -> None:
+    """Show voronoi tessellation."""
+    projected_cells = cells.copy().to_crs(crs)
+    projected_cells.boundary.plot(ax=ax, lw=0.2, color="lightgrey", zorder=0)
+
+
 def main() -> None:
     """Main snakemake process."""
     crs = _utils.check_crs_config(snakemake.params.crs)
@@ -353,14 +372,19 @@ def main() -> None:
     shapes = combine_shapes(land, maritime, crs["geographic"])
     shapes = _schemas.ShapesSchema.validate(shapes)
 
-    if not maritime.empty:
-        shapes = split_maritime_by_shoreline_voronoi(
-            shapes, crs=crs, voronoi_config=VoronoiConfig(**snakemake.params.voronoi)
+    voronoi_config = VoronoiConfig(**snakemake.params.voronoi)
+    cells = None
+    if not maritime.empty and voronoi_config.enabled:
+        shapes, cells = split_maritime_by_shoreline_voronoi(
+            shapes, crs=crs, voronoi_config=voronoi_config
         )
         shapes = _schemas.ShapesSchema.validate(shapes)
-    shapes.to_parquet(snakemake.output.country)
 
-    fig, _ = _utils.plot_shapes(shapes, crs["projected"])
+    shapes.to_parquet(snakemake.output.country)
+    fig, ax = _utils.plot_shapes(shapes, crs["projected"])
+    if cells is not None and not cells.empty:
+        plot_voronoi_cells(ax, cells, crs["projected"])
+
     fig.savefig(snakemake.output.plot, dpi=200, bbox_inches="tight")
 
 

@@ -46,9 +46,16 @@ def check_crs_config(crs: dict[str, int | str]) -> dict[str, CRS]:
 def plot_shapes(shapes: gpd.GeoDataFrame, crs: str | int | CRS) -> tuple[Figure, Axes]:
     """Generate a nice figure of dataframes that fit the module's schema."""
     gdf = shapes.copy().to_crs(crs)
+    colors = {"land": "olive", "maritime": "tab:blue"}
     fig, ax = plt.subplots(layout="constrained")
-    gdf.boundary.plot(ax=ax, color="black", lw=0.5)
-    ax = gdf.plot(ax=ax, column="shape_class", legend=False)
+    ax = gdf.plot(
+        ax=ax,
+        column="shape_class",
+        color=gdf["shape_class"].map(colors),
+        legend=False,
+        zorder=-1,
+    )
+    gdf.boundary.plot(ax=ax, color="black", lw=0.5, zorder=1)
     ax.set(xticks=[], yticks=[], xlabel="", ylabel="")
     return fig, ax
 
