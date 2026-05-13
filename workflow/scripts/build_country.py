@@ -10,7 +10,6 @@ import _schemas
 import _utils
 import geopandas as gpd
 import pandas as pd
-from matplotlib import pyplot as plt
 from pyproj import CRS
 from shapely import make_valid, voronoi_polygons
 from shapely.geometry import (
