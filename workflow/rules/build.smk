@@ -3,7 +3,7 @@
 
 rule build_country:
     input:
-        land=lambda wc: f"<resources>/automatic/land/{get_country_filename(wc.country)}.parquet",
+        land=lambda wc: f"<resources>/automatic/{get_country_file(wc.country)}.parquet",
         maritime="<resources>/automatic/eez/{country}.parquet",
     output:
         country="<resources>/automatic/country/{country}.parquet",
@@ -11,7 +11,7 @@ rule build_country:
             "<resources>/automatic/country/{country}.png",
             caption="../report/build_country.rst",
             category="Module Geo-Boundaries",
-            subcategory="Combined countries",
+            subcategory="Country area",
         ),
     log:
         "<logs>/{country}/build_country.log",
@@ -46,6 +46,8 @@ rule build_combined_area:
         "../envs/shape.yaml"
     params:
         crs=config["crs"],
+        countries=sorted([i for i in config["countries"]]),
+        sources=sorted(set([i["source"] for i in config["countries"].values()])),
     message:
         "Combine land and marine polygons."
     script:

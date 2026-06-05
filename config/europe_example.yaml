@@ -1,5 +1,4 @@
 # A minimal example of how to configure this module
-overture_release: "latest"
 voronoi_eez:
   enabled: True
   sample_spacing: 10000
@@ -7,109 +6,152 @@ crs:
   projected: "epsg:3035"
   geographic: "epsg:4326"
 countries:
+  "ALB":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "AUT":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "BEL":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "BGR":
     subtype: "1"
-    source: "gadm"
-  "HRV":
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "BIH":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "CHE":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "CYP":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "CZE":
     subtype: "1"
-    source: "gadm"
-  "DNK":
-    subtype: "2"
-    source: "nuts"
-    resolution: 03M
-    year: 2024
-  "EST":
-    subtype: "1"
-    source: "gadm"
-  "FIN":
-    subtype: "1"
-    source: "gadm"
-  "FRA":
-    subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "DEU":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "DNK":
+    subtype: "1"
+    source: "nuts"
+    resolution: 01M
+    year: 2024
+  "ESP":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+    extra_eez: 8364
+  "EST":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "FIN":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "FRA":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "GBR":
+    subtype: "region"
+    source: "overture"
+  "GGY":
+    subtype: "0"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "GRC":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "HRV":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "HUN":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "IMN":
+    subtype: "0"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "IRL":
     subtype: "region"
     source: "overture"
   "ITA":
     subtype: "1"
-    source: "gadm"
-  "LVA":
-    subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "LTU":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "LUX":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "LVA":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "MKD":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "MNE":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "NLD":
     subtype: "region"
     source: "overture"
-  "POL":
-    subtype: "1"
-    source: "gadm"
-  "PRT":
-    subtype: "2"
-    source: "nuts"
-    resolution: 03M
-    year: 2024
-  "ROU":
-    subtype: "1"
-    source: "gadm"
-  "SVK":
-    subtype: "1"
-    source: "gadm"
-  "SVN":
-    subtype: "1"
-    source: "gadm"
-  "ESP":
-    subtype: "1"
-    source: "gadm"
-  "SWE":
-    subtype: "1"
-    source: "gadm"
-  "GBR":
-    subtype: "region"
-    source: "overture"
-  "ALB":
-    subtype: "1"
-    source: "gadm"
-  "BIH":
-    subtype: "1"
-    source: "gadm"
-  "MKD":
-    subtype: "1"
-    source: "gadm"
-  "MNE":
-    subtype: "1"
-    source: "gadm"
   "NOR":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "POL":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "PRT":
+    subtype: "1"
+    source: "nuts"
+    resolution: 01M
+    year: 2024
+    extra_eez: [8361, 8363]
+  "ROU":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
   "SRB":
     subtype: "1"
-    source: "gadm"
-  "CHE":
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "SVK":
     subtype: "1"
-    source: "gadm"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "SVN":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "SWE":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"
+  "XKX":
+    subtype: "1"
+    source: "geoboundaries"
+    release_type: "gbOpen"

@@ -25,8 +25,36 @@ pytz = ">=2026.1.post1"
 [tasks]
 test-integration = {cmd = "pytest tests/integration_test.py"}
 
+[tasks.export-conda-spec]
+description = "Export one pixi environment/platform as a conda explicit spec"
+args = ["env", "platform"]
+cmd = "pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' workflow/envs/"
+
+[tasks.rename-conda-spec]
+description = "Rename one pixi conda explicit spec to a Snakemake pin file"
+args = ["env", "platform"]
+cmd = "mv workflow/envs/{{ env }}_{{ platform }}_conda_spec.txt workflow/envs/{{ env }}.{{ platform }}.pin.txt"
+
+[tasks.export-snakemake-pin]
+description = "Export one pixi environment/platform as a Snakemake-compatible conda pin file"
+args = ["env", "platform"]
+depends-on = [
+  { task = "export-conda-spec", args = ["{{ env }}", "{{ platform }}"] },
+  { task = "rename-conda-spec", args = ["{{ env }}", "{{ platform }}"] },
+]
+
+[tasks.export-snakemake-env]
+description = "Export one pixi environment as a Snakemake conda environment"
+args = ["env"]
+depends-on = [
+  { task = "export-snakemake-pin", args = ["{{ env }}", "win-64"] },
+  { task = "export-snakemake-pin", args = ["{{ env }}", "linux-64"] },
+  { task = "export-snakemake-pin", args = ["{{ env }}", "osx-arm64"] },
+]
+cmd = "pixi workspace export conda-environment --environment '{{ env }}' workflow/envs/{{ env }}.yaml"
+
 [feature.shape]
-channels = ["conda-forge", "nodefaults"]
+channels = ["conda-forge"]
 
 [feature.shape.dependencies]
 boto3 = "1.40.46.*"
@@ -39,6 +67,9 @@ pyarrow = "19.0.1.*"
 pycountry = "24.6.1.*"
 shapely = "2.1.1.*"
 numpy = "2.3.5.*"
+pandas = "3.0.2.*"
+pytz = "2026.2.*"
+requests = "2.33.1.*"
 
 [environments]
 shape = { features = ["shape"], no-default-feature = true }

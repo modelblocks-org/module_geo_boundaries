@@ -1,13 +1,113 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 
 $defs:
-  epsgCode:
+  crsCode:
     anyOf:
+      # Compact authority:code, e.g. EPSG:4326, OGC:CRS84, ESRI:102003
       - type: string
-        pattern: '^(?:[eE][pP][sS][gG]):\d{4,5}$'
+        pattern: "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
+      # Optional legacy shorthand for numeric codes
       - type: integer
-        minimum: 1000
-        maximum: 99999
+        minimum: 1
+
+  countryBase:
+    type: object
+    properties:
+      subtype:
+        description: >
+          "Regional aggregation to download. Varies per dataset."
+        anyOf:
+          - type: integer
+          - type: string
+      source:
+        description: |
+          Dataset to use as source.
+        type: string
+        enum: ["overture", "gadm", "nuts", "geoboundaries"]
+      extra_eez:
+        description: >
+          Optional. Additional EEZ zones to append to this country.
+        default: []
+        anyOf:
+          - type: integer
+          - type: array
+            items:
+              type: integer
+    required:
+      - subtype
+      - source
+
+  countryOverture:
+    type: object
+    properties:
+      source:
+        const: "overture"
+
+  countryGadm:
+    type: object
+    properties:
+      source:
+        const: "gadm"
+      subtype:
+        description: "GADM administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3, 4]
+          - type: string
+            enum: ["0", "1", "2", "3", "4"]
+
+  countryNuts:
+    type: object
+    properties:
+      source:
+        const: "nuts"
+      subtype:
+        description: "NUTS administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3]
+          - type: string
+            enum: ["0", "1", "2", "3"]
+      resolution:
+        description: "Resolution for NUTS source."
+        type: string
+        pattern: "^[0-9]{2}M$"
+      year:
+        description: "Year for NUTS source."
+        type: integer
+    required:
+      - resolution
+      - year
+
+  countryGeoboundaries:
+    type: object
+    properties:
+      source:
+        const: "geoboundaries"
+      subtype:
+        description: "geoBoundaries administrative level."
+        anyOf:
+          - type: integer
+            enum: [0, 1, 2, 3, 4, 5]
+          - type: string
+            enum: ["0", "1", "2", "3", "4", "5"]
+      release_type:
+        description: "geoBoundaries release type (each with different licensing)."
+        type: string
+        enum: ["gbOpen", "gbHumanitarian", "gbAuthoritative"]
+    required:
+      - release_type
+
+  country:
+    type: object
+    allOf:
+      - $ref: "#/$defs/countryBase"
+      - oneOf:
+          - $ref: "#/$defs/countryOverture"
+          - $ref: "#/$defs/countryGadm"
+          - $ref: "#/$defs/countryNuts"
+          - $ref: "#/$defs/countryGeoboundaries"
+    unevaluatedProperties: false
 
 description: "Schema for user-provided configuration files."
 type: object
@@ -19,75 +119,34 @@ properties:
       projected:
         description: "Projected CRS code (for area and length calculation)."
         allOf:
-          - $ref: '#/$defs/epsgCode'
+          - $ref: "#/$defs/crsCode"
       geographic:
         description: "Geographic CRS code (for latitude / longitude positioning)."
         allOf:
-          - $ref: '#/$defs/epsgCode'
+          - $ref: "#/$defs/crsCode"
     required:
       - projected
       - geographic
-    additionalProperties: False
+    additionalProperties: false
+
   countries:
     description: >
       Dictionary of countries with each country code as the key.
       Country code must be in ISO alpha-3 format (e.g., MEX, CHN, DEU).
     type: object
     patternProperties:
-      "^[A-Z]{3}$":  # Keys must be exactly three uppercase letters
-        type: object
-        properties:
-          subtype:
-            description: >
-              "Regional aggregation to gather (e.g., '0', '1', or '2' for GADM). Names vary per dataset."
-            type: string
-          source:
-            description: |
-              Dataset to use as source.
-            type: string
-            enum: ["overture", "gadm", "nuts"]
-          resolution:
-            description: "Resolution for NUTS source (required if source is 'nuts')."
-            type: string
-            pattern: "^[0-9]{2}M$"
-          year:
-            description: "Year for NUTS source (required if source is 'nuts')."
-            type: integer
-          extra_eez:
-            description: >
-              Optional. Additional EEZ zones to append to this country.
-            default: []
-            anyOf:
-              - type: integer
-              - type: array
-                items:
-                  type: integer
-        required:
-          - subtype
-          - source
-        additionalProperties: false
-        allOf:
-          - if:
-              properties:
-                source:
-                  enum: ["nuts"]
-            then:
-              required:
-                - resolution
-                - year
-          - else:
-              not:
-                required:
-                  - resolution
-                  - year
+      "^[A-Z]{3}$": # Keys must be exactly three uppercase letters
+        $ref: "#/$defs/country"
     minProperties: 1
     additionalProperties: false
+
   overture_release:
     description: |
       Overture data release to use. Two options are possible:
       - A specific release string in the form of 'yyyy-mm-dd.x'.
       - A request for the latest release in the form of 'latest'.
     type: string
+    default: "latest"
     pattern: "^(?:latest|(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\.\\d+)$"
   voronoi_eez:
     description: >
@@ -103,12 +162,51 @@ properties:
         default: false
       sample_spacing:
         description: >
-          Distance between sample points for shorelines.
-          Higher for finer splits at the cost of slower processing.
+          Maximum distance between sample points for shorelines.
+          Lower for finer splits at the cost of slower processing.
           Matches the unit of the projected CRS.
         type: integer
         default: 10000
         minimum: 1
+      min_samples_per_shoreline:
+        description: >
+          Minimum number of sampled points per touching shoreline component.
+          This helps small islands influence the split even when their coastlines
+          are shorter than `sample_spacing`.
+        type: integer
+        default: 8
+        minimum: 1
+      max_samples_per_maritime:
+        description: >
+          Approximate cap for sampled shoreline points per maritime shape.
+          If exceeded, the algorithm raises the effective sample spacing and
+          skips raw shoreline vertices to keep processing bounded.
+        type: integer
+        default: 50000
+        minimum: 1
+      include_shoreline_vertices:
+        description: >
+          Include existing shoreline vertices as Voronoi generators in addition
+          to adaptive midpoint samples.
+        type: boolean
+        default: true
+      shoreline_search_radius:
+        description: >
+          Distance around maritime polygons used to find the marine-facing
+          country exterior boundary. This handles land and EEZ datasets whose
+          coastlines do not exactly coincide. Matches the unit of the projected
+          CRS.
+        type: integer
+        default: 10000
+        minimum: 0
+      uncovered_area_tolerance:
+        description: >
+          Maximum area loss permitted per EEZ polygon after splitting. An error
+          will be raised if exceeded. Matches the unit of the projected CRS.
+        type: number
+        default: 1
+        minimum: 0
+
 required:
   - countries
   - crs
