@@ -17,6 +17,7 @@ RETRY_EXCEPTIONS = (
     requests.exceptions.Timeout,
     requests.exceptions.ChunkedEncodingError,
 )
+CRS_MARINE_REGIONS = "EPSG:4326"
 
 
 @dataclass

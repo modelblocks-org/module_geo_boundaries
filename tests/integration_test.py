@@ -11,12 +11,6 @@ import pytest
 from clio_tools.data_module import ModuleInterface
 
 
-@pytest.fixture(scope="module")
-def module_path():
-    """Parent directory of the project."""
-    return Path(__file__).parent.parent
-
-
 def test_interface_file(module_path):
     """The interfacing file should be correct."""
     assert ModuleInterface.from_yaml(module_path / "INTERFACE.yaml")

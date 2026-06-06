@@ -9,7 +9,7 @@ configfile: workflow.source_path("./test_config.yaml")
 module module_geo_boundaries:
     pathvars:
         # Redirect specific module results (outputs)
-        shapes="results/outputs/shapes.parquet",
+        shapes="results/outputs/{scenario}/shapes.parquet",
         # Redirect module intermediate files
         logs="resources/module/logs",
         resources="resources/module/resources",
@@ -28,6 +28,6 @@ use rule * from module_geo_boundaries as geo_boundaries_module_*
 rule all:
     default_target: True
     input:
-        "results/outputs/shapes.parquet",
+        "results/outputs/integration/shapes.parquet",
     message:
         "A generic test case for this module."

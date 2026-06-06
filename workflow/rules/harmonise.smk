@@ -41,9 +41,6 @@ rule harmonise_gadm:
         "<logs>/gadm/harmonise/{country}_{subtype}.log",
     conda:
         "../envs/shape.yaml"
-    params:
-        country_id=lambda wc: str(wc.country),
-        subtype=lambda wc: str(wc.subtype),
     message:
         "Harmonising '{wildcards.country}_{wildcards.subtype}' GADM dataset."
     script:
@@ -67,22 +64,21 @@ rule harmonise_nuts:
 
 rule download_harmonised_eez:
     output:
-        path="<resources>/automatic/eez/{country}.parquet",
+        path="<resources>/automatic/eez/single/{eez}.parquet",
         plot=report(
-            "<resources>/automatic/eez/{country}.png",
+            "<resources>/automatic/eez/single/{eez}.png",
             caption="../report/download_harmonised_eez.rst",
             category="Module Geo-Boundaries",
             subcategory="EEZ area",
         ),
     log:
-        "<logs>/eez/download_harmonised/{country}.log",
+        "<logs>/eez/download_harmonised/{eez}.log",
     localrule: True
     conda:
         "../envs/shape.yaml"
     params:
-        extra_eez=lambda wc: config["countries"][wc.country].get("extra_eez", []),
         timeouts=internal["timeouts"],
     message:
-        "Download and harmonise '{wildcards.country}' EEZ dataset."
+        "Download and harmonise EEZ dataset '{wildcards.eez}'."
     script:
         "../scripts/download_harmonised_eez.py"

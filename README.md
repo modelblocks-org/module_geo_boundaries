@@ -26,18 +26,19 @@ Data processing steps:
 </p>
 
 
-1. The configuration file is read to identify the datasets to use as well as the specific countries and regional aggregation (`subtype` in the configuration) to process.
+1. For each requested country combination (`scenarios`), the configuration file is read to identify the datasets (`source`) to use as well as the specific countries and subnational aggregation (`subtype`) to process.
     - Country landmass data: [eurostat NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics), [GADM](https://gadm.org/), [geoBoundaries](https://www.geoboundaries.org/), and [Overture Maps](https://overturemaps.org/) are supported.
     - Exclusive Economic Zone (EEZ) data: [MarineRegions.org](https://www.marineregions.org/).
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
     - If identified, contested regions are removed at this stage.
     - Land is clipped using maritime Exclusive Economic Zones (EEZ).
     - Optionally, a Voronoi algorithm is run to separate EEZ areas to fit subnational regions.
-3. Each country file is combined and then clipped using its neighbours to minimise overlapping polygons.
+3. The country files requested in the scenario are combined and then clipped using their neighbours to minimise overlapping polygons.
 
-> [!TIP]
-> The `subtype` naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
-> Use the references at the bottom of this page for more details.
+> [!TIP] Keep in mind the following
+> - The `subtype` naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
+>Use the references at the bottom of this page for more details.
+> - The downloaded data is always kept locally for future re-use.
 
 > [!CAUTION]
 > To increase the replicability of your workflow, we recommend using NUTS and geoBoundaries as sources whenever possible as they have more stable hosting methods than Overture Maps and GADM.
@@ -50,7 +51,7 @@ Please consult the configuration [README](./config/README.md) and the [configura
 ## Input / output structure
 <!-- Please describe input / output file placement below -->
 
-This module only has one output: a geoparquet file with your requested geo-boundary "shapes".
+This module only has one output: a geoparquet file with your requested geo-boundary "shapes" for each of the the configured `scenarios`.
 
 Please consult the [interface file](./INTERFACE.yaml) for more information.
 

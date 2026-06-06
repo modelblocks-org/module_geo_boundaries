@@ -46,7 +46,7 @@ def standardise_country_gadm(
 if __name__ == "__main__":
     standardise_country_gadm(
         input_path=snakemake.input.raw,
-        country_id=snakemake.params.country_id,
-        subtype=snakemake.params.subtype,
+        country_id=snakemake.wildcards.country,
+        subtype=snakemake.wildcards.subtype,
         output_path=snakemake.output.standardised,
     )

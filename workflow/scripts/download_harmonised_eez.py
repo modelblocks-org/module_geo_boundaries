@@ -1,10 +1,9 @@
 """Download data from the Marineregions database.
 
 https://www.marineregions.org/
-Constructs EEZ datasets per country
+
 - In cases where no EEZ is available for a country an empty dataframe will be saved.
-- Optionally, additional EEZs may be downloaded if specified in `extra_eez`.
-    - These should result in an error if the code is invalid.
+- Individual MarineRegions IDs can be downloaded separately and combined later.
 """
 
 import sys
@@ -13,7 +12,6 @@ from typing import TYPE_CHECKING, Any
 import _schemas
 import _utils
 import geopandas as gpd
-import pandas as pd
 import requests
 from matplotlib import pyplot as plt
 
@@ -22,7 +20,6 @@ if TYPE_CHECKING:
 
 WFS_BASE = "https://geo.vliz.be/geoserver/MarineRegions/wfs"
 WFS_VERSION = "2.0.0"
-CRS_MARINE_REGIONS = "EPSG:4326"
 
 
 def _raise_for_geoserver_exception(response: requests.Response) -> None:
@@ -89,7 +86,7 @@ def get_eez_by_cql(
         "typeNames": "eez",
         "outputFormat": "application/json",
         "cql_filter": cql_filter,
-        "srsName": CRS_MARINE_REGIONS,
+        "srsName": _utils.CRS_MARINE_REGIONS,
     }
     response = _get_wfs_response(params, timeouts)
 
@@ -103,7 +100,7 @@ def get_eez_by_cql(
     if data["features"]:
         # Let geopandas build the frame, CRS will match request
         result = gpd.GeoDataFrame.from_features(
-            data["features"], crs=CRS_MARINE_REGIONS
+            data["features"], crs=_utils.CRS_MARINE_REGIONS
         )
         if result.empty:
             result = None
@@ -179,45 +176,44 @@ def plot(gdf: gpd.GeoDataFrame, country: str):
     return fig, ax
 
 
-def download_eezs(
-    country: str, extra_eez: list[str], timeouts: _utils.DownloadTimeouts
+def download_eez(
+    cql_filter: str,
+    country_id: str,
+    timeouts: _utils.DownloadTimeouts,
+    *,
+    allow_empty: bool,
 ) -> gpd.GeoDataFrame:
-    """Download EEZ data as requested.
+    """Download and harmonise one EEZ query.
 
-    If no EEZ exists for a country, the dataframe will be empty.
+    If no EEZ exists for a country query, the dataframe will be empty.
+    MarineRegions ID queries are expected to return exactly one dataset.
     """
-    eez_gdfs: list[gpd.GeoDataFrame] = []
+    gdf = get_eez_by_cql(cql_filter, timeouts)
+    if gdf is None and not allow_empty:
+        raise RuntimeError(f"Configured EEZ query {cql_filter!r} returned no features")
 
-    iso3_eez = get_eez_by_cql(f"iso_ter1='{country}'", timeouts)
-    if iso3_eez is not None:
-        eez_gdfs.append(iso3_eez)
-
-    for mrgid in extra_eez:
-        extra_gdf = get_eez_by_cql(f"mrgid={int(mrgid)}", timeouts)
-        if extra_gdf is None:
-            raise RuntimeError(f"Configured extra_eez {mrgid!r} returned no features")
-        eez_gdfs.append(extra_gdf)
-
-    combined_gdf = None
-    if eez_gdfs:
-        combined_gdf = pd.concat(eez_gdfs, ignore_index=True)
-
-    return transform_to_schema(combined_gdf, country)
+    return transform_to_schema(gdf, country_id)
 
 
 def main() -> None:
     """Main snakemake process."""
-    country = snakemake.wildcards.country
-    extra_eez = snakemake.params.extra_eez
-
     timeouts = _utils.DownloadTimeouts(**snakemake.params.timeouts)
-    if not isinstance(extra_eez, list):
-        extra_eez = [extra_eez]
+    eez = snakemake.wildcards.eez
 
-    gdf = download_eezs(country, extra_eez, timeouts)
+    if eez.isdigit():
+        label = f"mrgid {eez}"
+        gdf = download_eez(
+            f"mrgid={int(eez)}", "extra_eez", timeouts, allow_empty=False
+        )
+    elif len(eez) == 3 and eez.isalpha() and eez.isupper():
+        label = eez
+        gdf = download_eez(f"iso_ter1='{eez}'", eez, timeouts, allow_empty=True)
+    else:
+        raise ValueError(f"Unsupported EEZ identifier: {eez!r}")
+
     gdf.to_parquet(snakemake.output.path)
 
-    fig, _ = plot(gdf, country)
+    fig, _ = plot(gdf, label)
     fig.savefig(snakemake.output.plot, bbox_inches="tight", dpi=200)
 
 

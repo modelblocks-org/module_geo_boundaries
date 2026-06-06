@@ -1,54 +1,86 @@
 """Rules used to construct the final dataset."""
 
 
+rule build_eez:
+    input:
+        country="<resources>/automatic/eez/single/{country}.parquet",
+        extra=lambda wc: [
+            f"<resources>/automatic/eez/single/{mrgid}.parquet"
+            for mrgid in get_extra_eez_from_key(wc.eez_key)
+        ],
+    output:
+        path="<resources>/automatic/eez/combined/{country}_{eez_key}.parquet",
+    log:
+        "<logs>/eez/build/{country}_{eez_key}.log",
+    conda:
+        "../envs/shape.yaml"
+    message:
+        "Build '{wildcards.country}' EEZ dataset ({wildcards.eez_key})."
+    script:
+        "../scripts/build_eez.py"
+
+
 rule build_country:
     input:
-        land=lambda wc: f"<resources>/automatic/{get_country_file(wc.country)}.parquet",
-        maritime="<resources>/automatic/eez/{country}.parquet",
+        land=lambda wc: (
+            f"<resources>/automatic/{get_country_file(wc.scenario, wc.country)}.parquet"
+        ),
+        maritime=lambda wc: (
+            f"<resources>/automatic/eez/{get_eez_file(wc.scenario, wc.country)}.parquet"
+        ),
     output:
-        country="<resources>/automatic/country/{country}.parquet",
+        country="<resources>/automatic/scenarios/{scenario}/{country}.parquet",
         plot=report(
-            "<resources>/automatic/country/{country}.png",
+            "<resources>/automatic/scenarios/{scenario}/{country}.png",
             caption="../report/build_country.rst",
             category="Module Geo-Boundaries",
             subcategory="Country area",
         ),
     log:
-        "<logs>/{country}/build_country.log",
+        "<logs>/scenarios/{scenario}/build_country/{country}.log",
     conda:
         "../envs/shape.yaml"
     params:
-        crs=config["crs"],
-        voronoi=internal["voronoi_eez"] | config.get("voronoi_eez", {}),
+        crs=lambda wc: get_crs_config(wc.scenario),
+        voronoi=lambda wc: get_voronoi_eez_config(wc.scenario),
     message:
-        "{wildcards.country}: build combined land and marine polygons."
+        "{wildcards.scenario}:{wildcards.country}: build combined land and marine polygons."
     script:
         "../scripts/build_country.py"
 
 
 rule build_combined_area:
     input:
-        countries=[
-            f"<resources>/automatic/country/{country}.parquet"
-            for country in config["countries"]
+        countries=lambda wc: [
+            f"<resources>/automatic/scenarios/{wc.scenario}/{country}.parquet"
+            for country in config["scenarios"][wc.scenario]["countries"]
         ],
     output:
         combined="<shapes>",
         plot=report(
-            "<results>/shapes.png",
+            "<results>/{scenario}/shapes.png",
             caption="../report/build_combined_area.rst",
             category="Module Geo-Boundaries",
             subcategory="Combined area",
         ),
     log:
-        "<logs>/build_combined_area.log",
+        "<logs>/scenarios/{scenario}/build_combined_area.log",
     conda:
         "../envs/shape.yaml"
     params:
-        crs=config["crs"],
-        countries=sorted([i for i in config["countries"]]),
-        sources=sorted(set([i["source"] for i in config["countries"].values()])),
+        crs=lambda wc: get_crs_config(wc.scenario),
+        countries=lambda wc: sorted(
+            [i for i in config["scenarios"][wc.scenario]["countries"]]
+        ),
+        sources=lambda wc: sorted(
+            set(
+                [
+                    i["source"]
+                    for i in config["scenarios"][wc.scenario]["countries"].values()
+                ]
+            )
+        ),
     message:
-        "Combine land and marine polygons."
+        "{wildcards.scenario}: combine land and marine polygons."
     script:
         "../scripts/build_combined_area.py"
