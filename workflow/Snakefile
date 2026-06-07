@@ -12,6 +12,7 @@ pathvars:
     # Module results
     shapes="<results>/{scenario}/shapes.parquet",
 
+
 wildcard_constraints:
     country="[A-Z]{3}",
     eez_key="[0-9_]+",

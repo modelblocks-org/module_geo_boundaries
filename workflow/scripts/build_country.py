@@ -249,11 +249,7 @@ def _make_shoreline_seed_records(
 
 
 def _split_one_maritime(
-    maritime_row,
-    land: gpd.GeoDataFrame,
-    *,
-    crs: CRS,
-    voronoi_config: VoronoiConfig,
+    maritime_row, land: gpd.GeoDataFrame, *, crs: CRS, voronoi_config: VoronoiConfig
 ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Split a single maritime shape to fit the coastline."""
     if land.empty:
