@@ -233,7 +233,7 @@ properties:
   scenarios:
     description: >
       Shape-building scenarios to run.
-      Downloaded source files will be re-used between them if possible.
+      Downloaded source files will be reused between them if possible.
     type: object
     patternProperties:
       "^[A-Za-z0-9_-]+$":

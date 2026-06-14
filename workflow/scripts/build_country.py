@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+import _geo
 import _schemas
 import _utils
 import geopandas as gpd
@@ -21,7 +22,6 @@ from shapely.geometry import (
 )
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import linemerge, unary_union
-from shapely.validation import explain_validity
 
 if TYPE_CHECKING:
     snakemake: Any
@@ -48,57 +48,6 @@ class ShorelineLine:
 
     assigned_shape_id: str
     geometry: LineString
-
-
-def validate_reprojections(
-    land: gpd.GeoDataFrame, maritime: gpd.GeoDataFrame, crs: dict[str, CRS]
-) -> None:
-    """Fail early if configured CRS settings corrupt country inputs."""
-    problems = []
-    for layer, gdf in [("land", land), ("maritime", maritime)]:
-        if gdf.empty:
-            continue
-
-        for crs_name in ["projected", "geographic"]:
-            target_crs = crs[crs_name]
-            try:
-                projected = gdf.to_crs(target_crs)
-            except Exception as exc:
-                problems.append(
-                    f"{layer} to {crs_name} CRS {target_crs.to_string()!r}: "
-                    f"{type(exc).__name__}: {exc}"
-                )
-                continue
-
-            invalid = projected.loc[~projected.geometry.is_valid]
-            if invalid.empty:
-                continue
-
-            details = []
-            for row in invalid.head(10).itertuples():
-                details.append(
-                    ", ".join(
-                        [
-                            f"shape_id={getattr(row, 'shape_id', '<missing>')!r}",
-                            f"parent_id={getattr(row, 'parent_id', '<missing>')!r}",
-                            f"reason={explain_validity(row.geometry)!r}",
-                        ]
-                    )
-                )
-            if len(invalid) > len(details):
-                details.append(f"{len(invalid) - len(details)} more geometries")
-
-            problems.append(
-                f"{layer} to {crs_name} CRS {target_crs.to_string()!r} "
-                "created invalid geometries: " + "; ".join(details)
-            )
-
-    if problems:
-        raise ValueError(
-            "Configured CRS settings cannot safely reproject the inputs. "
-            "Choose CRS settings that cover all requested land and EEZ geometries.\n"
-            "- " + "\n- ".join(problems)
-        )
 
 
 def _iter_lines(geom: BaseGeometry) -> Iterator[LineString]:
@@ -316,6 +265,8 @@ def _split_one_maritime(
             .dissolve(by="assigned_shape_id", as_index=False)
             .rename(columns={"assigned_shape_id": "_assigned_shape_id"})
         )
+        # FIXME: check if rerunning `warp` is necessary to fix things near the antimeridian
+        pieces = _geo.to_projected_crs(pieces, crs)
         uncovered_area = maritime_geometry.difference(pieces.geometry.union_all()).area
         if uncovered_area > voronoi_config.uncovered_area_tolerance:
             raise RuntimeError(
@@ -345,11 +296,9 @@ def split_maritime_by_shoreline_voronoi(
     if not voronoi_config.enabled:
         return shapes, cells
 
-    land = shapes.loc[shapes["shape_class"].eq("land")].copy().to_crs(crs["projected"])
-    maritime = (
-        shapes.loc[shapes["shape_class"].eq("maritime")].copy().to_crs(crs["projected"])
-    )
-
+    shapes_proj = _geo.to_projected_crs(shapes, crs["projected"])
+    land = shapes_proj.loc[shapes_proj["shape_class"].eq("land")].copy()
+    maritime = shapes_proj.loc[shapes_proj["shape_class"].eq("maritime")].copy()
     if maritime.empty:
         raise ValueError("Requested voronoi without maritime shapes.")
 
@@ -364,7 +313,11 @@ def split_maritime_by_shoreline_voronoi(
     ]
 
     split_maritime = [pieces for pieces, _ in split_results]
-    result = pd.concat([land, *split_maritime], ignore_index=True)
+    result = gpd.GeoDataFrame(
+        pd.concat([land, *split_maritime], ignore_index=True),
+        geometry="geometry",
+        crs=crs["projected"]
+    )
 
     cell_frames = [i for _, i in split_results if not i.empty]
     if cell_frames:
@@ -373,57 +326,57 @@ def split_maritime_by_shoreline_voronoi(
             geometry="geometry",
             crs=crs["projected"],
         )
-
-    result = result.to_crs(crs["geographic"])
-    result.geometry = result.geometry.buffer(0)
+    result.geometry = result.geometry.make_valid()
+    result = _geo.to_geographic_crs(result, crs["geographic"])
     return result, cells
 
 
-def combine_shapes(
+def build_country(
     land: gpd.GeoDataFrame, maritime: gpd.GeoDataFrame, crs: dict[str, CRS]
 ) -> gpd.GeoDataFrame:
-    """Combine land and marine shapes."""
+    """Build country dataset, with maritime regions if necessary."""
     if maritime.empty:
-        return land.copy().to_crs(crs["geographic"])
+        return _geo.to_geographic_crs(land, crs["geographic"])
 
-    combined = land.copy().to_crs(crs["projected"])
-
-    # Remove contested zones and clip in projected coordinates.
-    eez = maritime.copy().to_crs(crs["projected"])
-    eez = eez[eez["contested"].eq(False)].drop(columns="contested")
-    combined.geometry = combined.geometry.difference(eez.geometry.union_all())
-    combined = pd.concat([combined, eez], ignore_index=True)
-
-    # Resolve floating point mismatches before converting back to output CRS.
-    combined.geometry = combined.geometry.buffer(0)
-    combined = combined.to_crs(crs["geographic"])
-    return combined
+    # Reproject
+    p_land = _geo.to_projected_crs(land, crs["projected"])
+    p_marine = _geo.to_projected_crs(maritime, crs["projected"])
+    # Remove contested zones
+    p_marine = p_marine[p_marine["contested"].eq(False)].drop(columns="contested")
+    # Give priority to EEZs
+    p_land.geometry = p_land.geometry.difference(p_marine.geometry.union_all())
+    combined = gpd.GeoDataFrame(
+        pd.concat([p_land, p_marine], ignore_index=True), crs=crs["projected"]
+    )
+    combined.geometry = combined.geometry.make_valid()
+    return _geo.to_geographic_crs(combined, crs["geographic"])
 
 
 def plot_voronoi_cells(ax: _utils.Axes, cells: gpd.GeoDataFrame, crs: CRS) -> None:
     """Show voronoi tessellation."""
-    projected_cells = cells.copy().to_crs(crs)
+    projected_cells = cells.to_crs(crs)
     projected_cells.boundary.plot(ax=ax, lw=0.2, color="lightgrey", zorder=0)
 
 
 def main() -> None:
     """Main snakemake process."""
-    crs = _utils.check_crs_config(snakemake.params.crs)
-
+    crs = _geo.check_crs_config(snakemake.params.crs)
     country = snakemake.wildcards.country
+
+    # Load and ensure request matches expectations
     land = _schemas.ShapesSchema.validate(gpd.read_parquet(snakemake.input.land))
     maritime = _schemas.EEZSchema.validate(gpd.read_parquet(snakemake.input.maritime))
-
     country_ids = set(land["country_id"]) | set(maritime["country_id"])
-    if set(country_ids) - set([country]):
+    if set(country_ids) - {country}:
         raise ValueError(
-            f"Country processing mismatch for {country!r}. Found {country_ids!r}."
+            f"Country mismatch: expected {country!r}, found {country_ids!r}."
         )
-    validate_reprojections(land, maritime, crs)
 
-    shapes = combine_shapes(land, maritime, crs)
+    # Build default country dataset
+    shapes = build_country(land, maritime, crs)
     shapes = _schemas.ShapesSchema.validate(shapes)
 
+    # If requested, run Voronoi splitting
     voronoi_config = VoronoiConfig(**snakemake.params.voronoi)
     cells = None
     if not maritime.empty and voronoi_config.enabled:
@@ -432,11 +385,11 @@ def main() -> None:
         )
         shapes = _schemas.ShapesSchema.validate(shapes)
 
+    # Save and show a pretty plot
     shapes.to_parquet(snakemake.output.country)
     fig, ax = _utils.plot_shapes(shapes, crs["projected"])
     if cells is not None and not cells.empty:
         plot_voronoi_cells(ax, cells, crs["projected"])
-
     fig.savefig(snakemake.output.plot, dpi=200, bbox_inches="tight")
 
 

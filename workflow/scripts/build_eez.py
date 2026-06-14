@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import _schemas
 import geopandas as gpd
 import pandas as pd
-from _utils import CRS_MARINE_REGIONS
+from _geo import CRS_MARINE_REGIONS
 
 if TYPE_CHECKING:
     snakemake: Any

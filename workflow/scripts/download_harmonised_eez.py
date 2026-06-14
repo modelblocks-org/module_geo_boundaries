@@ -13,6 +13,7 @@ import _schemas
 import _utils
 import geopandas as gpd
 import requests
+from _geo import CRS_MARINE_REGIONS
 from matplotlib import pyplot as plt
 
 if TYPE_CHECKING:
@@ -86,7 +87,7 @@ def get_eez_by_cql(
         "typeNames": "eez",
         "outputFormat": "application/json",
         "cql_filter": cql_filter,
-        "srsName": _utils.CRS_MARINE_REGIONS,
+        "srsName": CRS_MARINE_REGIONS,
     }
     response = _get_wfs_response(params, timeouts)
 
@@ -100,7 +101,7 @@ def get_eez_by_cql(
     if data["features"]:
         # Let geopandas build the frame, CRS will match request
         result = gpd.GeoDataFrame.from_features(
-            data["features"], crs=_utils.CRS_MARINE_REGIONS
+            data["features"], crs=CRS_MARINE_REGIONS
         )
         if result.empty:
             result = None

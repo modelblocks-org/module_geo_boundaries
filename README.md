@@ -26,7 +26,7 @@ Data processing steps:
 </p>
 
 
-1. For each requested country combination (`scenarios`), the configuration file is read to identify the datasets (`source`) to use as well as the specific countries and subnational aggregation (`subtype`) to process.
+1. The configuration file is read to identify which requested geopolitical combination (`scenarios`) was requested. These can be any number of nations (`countries`), each comming from a distinct dataset (`source`) and with its own subnational aggregation (`subtype`).
     - Country landmass data: [eurostat NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics), [GADM](https://gadm.org/), [geoBoundaries](https://www.geoboundaries.org/), and [Overture Maps](https://overturemaps.org/) are supported.
     - Exclusive Economic Zone (EEZ) data: [MarineRegions.org](https://www.marineregions.org/).
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
@@ -35,13 +35,21 @@ Data processing steps:
     - Optionally, a Voronoi algorithm is run to separate EEZ areas to fit subnational regions.
 3. The country files requested in the scenario are combined and then clipped using their neighbours to minimise overlapping polygons.
 
-> [!TIP] Keep in mind the following
-> - The `subtype` naming matches that of the source database. For example, NUTS uses 0, 1, 2 and 3 (NUTS0, NUTS1, NUTS2, etc.).
->Use the references at the bottom of this page for more details.
-> - The downloaded data is always kept locally for future re-use.
+> [!TIP]
+> Keep in mind the following
+>
+> - All downloaded data is kept locally for future reuse across scenarios to minimise stress on the data sources the module relies on.
+> - Data source availability can vary.
+> Always consult the data source website to identify if a country is available at the desired resolution.
 
 > [!CAUTION]
-> To increase the replicability of your workflow, we recommend using NUTS and geoBoundaries as sources whenever possible as they have more stable hosting methods than Overture Maps and GADM.
+> Be aware of the following known issues.
+>
+>- Overture Maps replicability: this data source [does not retain versions](https://github.com/orgs/OvertureMaps/discussions/422) for long.
+> If replicability is important to you, we suggest configuring other sources.
+>- Anti-meridian distortions: regions near the 180/-180 line (e.g., Fiji, Hawaii, New Zealand, Alaska) might be distorted during processing.
+> This is a known issue in the libraries we rely on (`geopandas`, `GDAL`) and something that is being actively [worked on at the moment](https://geopandas.org/en/v1.1.3/about/roadmap.html#s2-geometry-engine).
+> For now, we advice to use global projections (EPSG:3857, EPSG:8857) as a way to mitigate it.
 
 ## Configuration
 <!-- Please describe how to configure this module below -->

@@ -17,8 +17,6 @@ RETRY_EXCEPTIONS = (
     requests.exceptions.Timeout,
     requests.exceptions.ChunkedEncodingError,
 )
-CRS_MARINE_REGIONS = "EPSG:4326"
-
 
 @dataclass
 class DownloadTimeouts:
@@ -34,24 +32,15 @@ class DownloadTimeouts:
         return (self.connect_seconds, self.read_seconds)
 
 
-def check_crs_config(crs: dict[str, int | str]) -> dict[str, CRS]:
-    """Check the crs configuration settings."""
-    result = {k: CRS.from_user_input(v) for k, v in crs.items()}
-    if not result["projected"].is_projected:
-        raise ValueError(f"CRS must be projected. Got {crs['projected']!r}.")
-    if not result["geographic"].is_geographic:
-        raise ValueError(f"CRS must be geographic. Got {crs['geographic']!r}.")
-    return result
-
-
 def plot_shapes(shapes: gpd.GeoDataFrame, crs: str | int | CRS) -> tuple[Figure, Axes]:
     """Generate a nice figure of dataframes that fit the module's schema."""
-    gdf = shapes.copy().to_crs(crs)
+    # NOTE: the use of geopandas' to_crs is purposeful.
+    # It's likely what users of the module will rely on later.
+    gdf = shapes.to_crs(crs)
     colors = {"land": "olive", "maritime": "tab:blue"}
     fig, ax = plt.subplots(layout="constrained")
     ax = gdf.plot(
         ax=ax,
-        column="shape_class",
         color=gdf["shape_class"].map(colors),
         legend=False,
         zorder=-1,

@@ -15,7 +15,7 @@ rule build_eez:
     conda:
         "../envs/shape.yaml"
     message:
-        "Build '{wildcards.country}' EEZ dataset ({wildcards.eez_key})."
+        "{wildcards.country}: build EEZ dataset {wildcards.eez_key}."
     script:
         "../scripts/build_eez.py"
 
@@ -44,7 +44,7 @@ rule build_country:
         crs=lambda wc: get_crs_config(wc.scenario),
         voronoi=lambda wc: get_voronoi_eez_config(wc.scenario),
     message:
-        "{wildcards.scenario}:{wildcards.country}: build combined land and marine polygons."
+        "{wildcards.scenario}-{wildcards.country}: building combined single-country dataset."
     script:
         "../scripts/build_country.py"
 
@@ -81,6 +81,6 @@ rule build_combined_area:
             )
         ),
     message:
-        "{wildcards.scenario}: combine land and marine polygons."
+        "{wildcards.scenario}: building combined dataset with all countries."
     script:
         "../scripts/build_combined_area.py"

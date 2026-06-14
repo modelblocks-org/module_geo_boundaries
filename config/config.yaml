@@ -52,9 +52,6 @@ scenarios:
   USA_states:
     # Example of regional disaggregation of a large country crossing the antimeridean.
     # USA has multiple marine zones, which can be appended as extras
-    crs:
-      projected: "EPSG:10598"
-      geographic: "epsg:4326"
     countries:
       "USA":
         subtype: "1"
