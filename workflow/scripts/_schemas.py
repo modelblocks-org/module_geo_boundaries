@@ -1,7 +1,11 @@
-import pandera.pandas as pa
+"""Reusable schemas."""
+
+import geopandas as gpd
+from _geo import extract_polygonal_geometry
+from pandera import pandas as pa
 from pandera.typing.geopandas import GeoSeries
 from pandera.typing.pandas import Series
-from shapely.validation import make_valid
+from shapely.geometry import MultiPolygon, Polygon
 
 SUPPORTED_DATASETS = ["gadm", "overture", "marineregions", "nuts", "geoboundaries"]
 
@@ -31,18 +35,24 @@ class ShapesSchema(pa.DataFrameModel):
     "Human-readable name in the parent dataset."
 
     @pa.dataframe_parser
-    def fix_geometries(cls, df):
-        """Attempt to correct empty or malformed geometries."""
-        mask = df["geometry"].apply(lambda g: (g is not None) and (not g.is_empty))
-        df = df.loc[mask]
-        df["geometry"] = df["geometry"].apply(
-            lambda g: g if g.is_valid else make_valid(g)
-        )
-        return df
+    def fix_geometries(cls, gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:  # type: ignore[misc]
+        """Attempt to correct empty, malformed, or non-polygonal geometries."""
+        mask = gdf["geometry"].notna() & ~gdf["geometry"].is_empty
+        gdf = gdf.loc[mask].copy()
+
+        invalid = ~gdf.geometry.is_valid
+        gdf.loc[invalid, "geometry"] = gdf.loc[invalid, "geometry"].make_valid()
+
+        gdf["geometry"] = gdf["geometry"].apply(extract_polygonal_geometry)
+        return gdf.loc[gdf["geometry"].notna()]
 
     @pa.check("geometry", element_wise=True)
-    def check_geometries(cls, geom):
-        return (geom is not None) and (not geom.is_empty) and geom.is_valid
+    def check_geometries(cls, geom) -> bool:
+        return (
+            isinstance(geom, (Polygon, MultiPolygon))
+            and not geom.is_empty
+            and geom.is_valid
+        )
 
 
 class EEZSchema(ShapesSchema):

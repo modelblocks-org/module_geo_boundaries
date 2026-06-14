@@ -4,6 +4,7 @@ import sys
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
+import _geo
 import _schemas
 import _utils
 import geopandas as gpd
@@ -21,7 +22,7 @@ def remove_overlaps(gdf: gpd.GeoDataFrame, crs: dict[str, CRS]) -> gpd.GeoDataFr
     The first row wins. Any area shared with an earlier kept geometry is removed
     from the later geometry.
     """
-    projected = gdf.to_crs(crs["projected"]).copy()
+    projected = _geo.to_projected_crs(gdf, crs["projected"])
 
     left_idx, right_idx = projected.sindex.query(
         projected.geometry, predicate="intersects"
@@ -57,22 +58,24 @@ def remove_overlaps(gdf: gpd.GeoDataFrame, crs: dict[str, CRS]) -> gpd.GeoDataFr
 
     projected["geometry"] = geoms
     projected = projected.loc[projected.geometry.notna() & ~projected.geometry.is_empty]
-
-    result = projected.to_crs(crs["geographic"])
-    result.geometry = result.geometry.buffer(0)
+    result = _geo.to_geographic_crs(projected, crs["geographic"])
 
     return result
 
 
 def main() -> None:
     """Main snakemake process."""
-    crs = _utils.check_crs_config(snakemake.params.crs)
+    crs = _geo.check_crs_config(snakemake.params.crs)
 
-    country_list = [
-        gpd.read_parquet(i).to_crs(crs["geographic"]) for i in snakemake.input.countries
-    ]
-    combined = _schemas.ShapesSchema.validate(
-        pd.concat(country_list, ignore_index=True)
+    # Load and ensure inputs are healthy
+    country_list = [gpd.read_parquet(i) for i in snakemake.input.countries]
+    crs_mismatch = [not crs["geographic"].equals(i.crs) for i in country_list]
+    if any(crs_mismatch):
+        raise ValueError(f"Received datasets with invalid CRS: {sum(crs_mismatch)!r} .")
+    combined = gpd.GeoDataFrame(
+        pd.concat(country_list, ignore_index=True),
+        crs=crs["geographic"],
+        geometry="geometry",
     )
 
     combined = remove_overlaps(combined, crs)

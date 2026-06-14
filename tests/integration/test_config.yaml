@@ -2,16 +2,18 @@ module_geo_boundaries:
   crs:
     projected: "epsg:3857"
     geographic: "epsg:4326"
-  countries:
-    "MNE":
-      subtype: "0"
-      source: "geoboundaries"
-      release_type: "gbOpen"
-    "SVK":
-      subtype: "country"
-      source: "overture"
-    "MKD":
-      subtype: "0"
-      source: "nuts"
-      resolution: 03M
-      year: 2024
+  scenarios:
+    integration:
+      countries:
+        "MNE":
+          subtype: "0"
+          source: "geoboundaries"
+          release_type: "gbOpen"
+        "SVK":
+          subtype: "country"
+          source: "overture"
+        "MKD":
+          subtype: "0"
+          source: "nuts"
+          resolution: 03M
+          year: 2024

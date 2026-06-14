@@ -12,6 +12,8 @@ pathvars:
       description: "location of module results."
   results:
     shapes:
-      default: "<results>/shapes.parquet"
+      default: "<results>/{scenario}/shapes.parquet"
       description: |
-        Harmonised geoparquet dataset with all the configured countries, including non-contested exclusive economic zones.
+        Harmonised geoparquet dataset for a configured scenario, including land and maritime non-contested EEZs.
+wildcards:
+  scenario: Scenario name from the module configuration.

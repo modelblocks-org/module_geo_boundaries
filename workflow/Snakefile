@@ -10,7 +10,12 @@ min_version("9.19")
 # This allows users to re-wire how the module is used in their workflow with ease.
 pathvars:
     # Module results
-    shapes="<results>/shapes.parquet",
+    shapes="<results>/{scenario}/shapes.parquet",
+
+
+wildcard_constraints:
+    country="[A-Z]{3}",
+    eez_key="[0-9_]+",
 
 
 # Load the example configuration. This will be overridden by users.
@@ -33,6 +38,7 @@ include: "rules/build.smk"
 
 
 # Add all files to be delivered alongside the workflow here
+workflow.source_path("scripts/_geo.py")
 workflow.source_path("scripts/_schemas.py")
 workflow.source_path("scripts/_utils.py")
 
