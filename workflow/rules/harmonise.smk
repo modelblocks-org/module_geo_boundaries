@@ -17,6 +17,8 @@ rule harmonise_geoboundaries:
 
 
 rule download_harmonised_overture:
+    input:
+        duckdb_extensions=rules.download_duckdb_extensions.output.path,
     output:
         path="<resources>/automatic/overture/harmonise/{country}_{subtype}.parquet",
     log:

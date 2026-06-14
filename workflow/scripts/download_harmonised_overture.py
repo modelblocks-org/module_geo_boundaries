@@ -98,7 +98,6 @@ def download_country_overture(country: str, subtype: str, version: str, path: st
     # Setup SQL connection to the remote dataset
     connection = duckdb.connect()
     for extension in ["spatial", "httpfs"]:
-        connection.install_extension(extension)
         connection.load_extension(extension)
     connection.sql("SET s3_region='us-west-2'")
 
