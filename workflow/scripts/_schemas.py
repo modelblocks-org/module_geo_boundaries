@@ -1,4 +1,4 @@
-"""Reusable shemas."""
+"""Reusable schemas."""
 
 import geopandas as gpd
 from _geo import extract_polygonal_geometry
