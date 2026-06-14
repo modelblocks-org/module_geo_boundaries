@@ -1,6 +1,21 @@
 """Rules to used to download resource files."""
 
 
+rule download_duckdb_extensions:
+    output:
+        path="<resources>/automatic/overture/duckdb_extensions.txt",
+    log:
+        "<logs>/overture/download_duckdb_extensions.log",
+    localrule: True
+    threads: 1
+    conda:
+        "../envs/shape.yaml"
+    message:
+        "Downloading DuckDB extensions."
+    script:
+        "../scripts/download_duckdb_extensions.py"
+
+
 rule download_geoboundaries:
     output:
         path="<resources>/automatic/geoboundaries/download/{country}_{subtype}_{release_type}.parquet",
