@@ -7,9 +7,9 @@ rule download_duckdb_extensions:
     log:
         "<logs>/overture/download_duckdb_extensions.log",
     localrule: True
-    threads: 1
     conda:
         "../envs/shape.yaml"
+    threads: 1
     message:
         "Downloading DuckDB extensions."
     script:
