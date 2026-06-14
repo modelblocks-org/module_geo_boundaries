@@ -18,6 +18,7 @@ RETRY_EXCEPTIONS = (
     requests.exceptions.ChunkedEncodingError,
 )
 
+
 @dataclass
 class DownloadTimeouts:
     """Generic class for handling timeouts across data sources."""
@@ -39,12 +40,7 @@ def plot_shapes(shapes: gpd.GeoDataFrame, crs: str | int | CRS) -> tuple[Figure,
     gdf = shapes.to_crs(crs)
     colors = {"land": "olive", "maritime": "tab:blue"}
     fig, ax = plt.subplots(layout="constrained")
-    ax = gdf.plot(
-        ax=ax,
-        color=gdf["shape_class"].map(colors),
-        legend=False,
-        zorder=-1,
-    )
+    ax = gdf.plot(ax=ax, color=gdf["shape_class"].map(colors), legend=False, zorder=-1)
     gdf.boundary.plot(ax=ax, color="black", lw=0.5, zorder=1)
     ax.set(xticks=[], yticks=[], xlabel="", ylabel="")
     return fig, ax

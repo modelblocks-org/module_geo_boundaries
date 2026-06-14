@@ -316,7 +316,7 @@ def split_maritime_by_shoreline_voronoi(
     result = gpd.GeoDataFrame(
         pd.concat([land, *split_maritime], ignore_index=True),
         geometry="geometry",
-        crs=crs["projected"]
+        crs=crs["projected"],
     )
 
     cell_frames = [i for _, i in split_results if not i.empty]
