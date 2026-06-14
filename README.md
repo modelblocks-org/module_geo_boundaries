@@ -26,7 +26,7 @@ Data processing steps:
 </p>
 
 
-1. The configuration file is read to identify which requested geopolitical combination (`scenarios`) was requested. These can be any number of nations (`countries`), each comming from a distinct dataset (`source`) and with its own subnational aggregation (`subtype`).
+1. The configuration file is read to identify which requested geopolitical combination (`scenarios`) was requested. These can be any number of nations (`countries`), each coming from a distinct dataset (`source`) and with its own subnational aggregation (`subtype`).
     - Country landmass data: [eurostat NUTS](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics), [GADM](https://gadm.org/), [geoBoundaries](https://www.geoboundaries.org/), and [Overture Maps](https://overturemaps.org/) are supported.
     - Exclusive Economic Zone (EEZ) data: [MarineRegions.org](https://www.marineregions.org/).
 2. Individual country files are downloaded and harmonised to fit a standardised schema.
