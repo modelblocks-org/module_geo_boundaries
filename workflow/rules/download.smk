@@ -5,7 +5,7 @@ rule download_duckdb_extensions:
     output:
         path="<resources>/automatic/overture/duckdb_extensions.txt",
     log:
-        "<logs>/overture/download_duckdb_extensions.log",
+        "<logs>/download_duckdb_extensions.log",
     localrule: True
     conda:
         "../envs/shape.yaml"
