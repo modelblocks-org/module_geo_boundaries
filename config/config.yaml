@@ -28,8 +28,7 @@ scenarios:
         release_type: "gbOpen"
       BEL:
         subtype: 1
-        source: "geoboundaries"
-        release_type: "gbOpen"
+        source: "gadm"
       CHE:
         subtype: "country"
         source: "overture"
