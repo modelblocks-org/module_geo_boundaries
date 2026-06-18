@@ -8,7 +8,7 @@ import antimeridian
 import geopandas as gpd
 from pyproj import CRS
 from rasterio import warp
-from shapely import MultiPolygon, Polygon
+from shapely import MultiPolygon, Polygon, make_valid
 from shapely.geometry import GeometryCollection, mapping, shape
 from shapely.geometry.base import BaseGeometry
 
@@ -45,6 +45,38 @@ def extract_polygonal_geometry(
     result = None
     if polygons:
         result = polygons[0] if len(polygons) == 1 else MultiPolygon(polygons)
+    return result
+
+
+def make_geometry_valid(
+    geom: BaseGeometry | None,
+) -> Polygon | MultiPolygon | None:
+    """Return a valid polygonal geometry, dropping empty or non-polygonal parts."""
+    result = None
+
+    if geom is not None and not geom.is_empty:
+        if isinstance(geom, (Polygon, MultiPolygon)) and geom.is_valid:
+            result = geom
+        else:
+            polygonal = extract_polygonal_geometry(make_valid(geom))
+            if (
+                polygonal is not None
+                and not polygonal.is_empty
+                and not polygonal.is_valid
+            ):
+                polygonal = extract_polygonal_geometry(make_valid(polygonal))
+
+            if polygonal is not None and not polygonal.is_empty and polygonal.is_valid:
+                result = polygonal
+
+    return result
+
+
+def make_geometries_valid(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Apply polygonal geometry repair to a GeoDataFrame and drop empty results."""
+    result = gdf.copy()
+    result["geometry"] = result["geometry"].map(make_geometry_valid)
+    result = result.loc[result["geometry"].notna()]
     return result
 
 

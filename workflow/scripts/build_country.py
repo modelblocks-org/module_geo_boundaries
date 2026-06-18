@@ -12,7 +12,7 @@ import _utils
 import geopandas as gpd
 import pandas as pd
 from pyproj import CRS
-from shapely import make_valid, voronoi_polygons
+from shapely import voronoi_polygons
 from shapely.geometry import (
     GeometryCollection,
     LineString,
@@ -233,7 +233,7 @@ def _split_one_maritime(
         cells = gpd.GeoDataFrame(geometry=[], crs=crs)
     else:
         # Run Voronoi
-        maritime_geometry = make_valid(maritime_row.geometry)
+        maritime_geometry = maritime_row.geometry
         cells = gpd.GeoDataFrame(
             geometry=list(
                 voronoi_polygons(
@@ -243,7 +243,7 @@ def _split_one_maritime(
             ),
             crs=crs,
         )
-        cells["geometry"] = cells.geometry.map(make_valid)
+        cells = _geo.make_geometries_valid(cells)
 
         # Identify where each voronoi cell belongs
         cells = gpd.sjoin(
@@ -259,15 +259,18 @@ def _split_one_maritime(
 
         # Keep only cells on the maritime area and test for completeness
         cells["geometry"] = cells.geometry.intersection(maritime_geometry)
-        cells = cells.loc[~cells.geometry.is_empty & (cells.geometry.area > 0)]
+        cells = _geo.make_geometries_valid(cells)
+        cells = cells.loc[cells.geometry.area > 0]
         pieces = (
             cells[["assigned_shape_id", "geometry"]]
             .dissolve(by="assigned_shape_id", as_index=False)
             .rename(columns={"assigned_shape_id": "_assigned_shape_id"})
         )
-        # FIXME: check if rerunning `warp` is necessary to fix things near the antimeridian
-        pieces = _geo.to_projected_crs(pieces, crs)
-        uncovered_area = maritime_geometry.difference(pieces.geometry.union_all()).area
+        pieces = _geo.make_geometries_valid(pieces)
+        uncovered = _geo.make_geometry_valid(
+            maritime_geometry.difference(pieces.geometry.union_all())
+        )
+        uncovered_area = 0 if uncovered is None else uncovered.area
         if uncovered_area > voronoi_config.uncovered_area_tolerance:
             raise RuntimeError(
                 f"Voronoi split did not fully cover maritime shape {maritime_row.shape_id!r}. "
@@ -297,6 +300,7 @@ def split_maritime_by_shoreline_voronoi(
         return shapes, cells
 
     shapes_proj = _geo.to_projected_crs(shapes, crs["projected"])
+    shapes_proj = _geo.make_geometries_valid(shapes_proj)
     land = shapes_proj.loc[shapes_proj["shape_class"].eq("land")].copy()
     maritime = shapes_proj.loc[shapes_proj["shape_class"].eq("maritime")].copy()
     if maritime.empty:
@@ -326,7 +330,6 @@ def split_maritime_by_shoreline_voronoi(
             geometry="geometry",
             crs=crs["projected"],
         )
-    result.geometry = result.geometry.make_valid()
     result = _geo.to_geographic_crs(result, crs["geographic"])
     return result, cells
 
@@ -341,14 +344,16 @@ def build_country(
     # Reproject
     p_land = _geo.to_projected_crs(land, crs["projected"])
     p_marine = _geo.to_projected_crs(maritime, crs["projected"])
+    p_land = _geo.make_geometries_valid(p_land)
+    p_marine = _geo.make_geometries_valid(p_marine)
     # Remove contested zones
     p_marine = p_marine[p_marine["contested"].eq(False)].drop(columns="contested")
     # Give priority to EEZs
     p_land.geometry = p_land.geometry.difference(p_marine.geometry.union_all())
+    p_land = _geo.make_geometries_valid(p_land)
     combined = gpd.GeoDataFrame(
         pd.concat([p_land, p_marine], ignore_index=True), crs=crs["projected"]
     )
-    combined.geometry = combined.geometry.make_valid()
     return _geo.to_geographic_crs(combined, crs["geographic"])
 
 

@@ -1,7 +1,7 @@
 """Reusable schemas."""
 
 import geopandas as gpd
-from _geo import extract_polygonal_geometry
+from _geo import make_geometries_valid
 from pandera import pandas as pa
 from pandera.typing.geopandas import GeoSeries
 from pandera.typing.pandas import Series
@@ -37,14 +37,7 @@ class ShapesSchema(pa.DataFrameModel):
     @pa.dataframe_parser
     def fix_geometries(cls, gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:  # type: ignore[misc]
         """Attempt to correct empty, malformed, or non-polygonal geometries."""
-        mask = gdf["geometry"].notna() & ~gdf["geometry"].is_empty
-        gdf = gdf.loc[mask].copy()
-
-        invalid = ~gdf.geometry.is_valid
-        gdf.loc[invalid, "geometry"] = gdf.loc[invalid, "geometry"].make_valid()
-
-        gdf["geometry"] = gdf["geometry"].apply(extract_polygonal_geometry)
-        return gdf.loc[gdf["geometry"].notna()]
+        return make_geometries_valid(gdf)
 
     @pa.check("geometry", element_wise=True)
     def check_geometries(cls, geom) -> bool:
