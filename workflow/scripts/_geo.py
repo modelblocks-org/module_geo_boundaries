@@ -48,9 +48,7 @@ def extract_polygonal_geometry(
     return result
 
 
-def make_geometry_valid(
-    geom: BaseGeometry | None,
-) -> Polygon | MultiPolygon | None:
+def make_geometry_valid(geom: BaseGeometry | None) -> Polygon | MultiPolygon | None:
     """Return a valid polygonal geometry, dropping empty or non-polygonal parts."""
     result = None
 
