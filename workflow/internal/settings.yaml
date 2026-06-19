@@ -12,4 +12,6 @@ timeouts:
   connect_seconds: 15
   read_seconds: 30
   initial_retry_seconds: 5
+gdal:
+  geojson_max_obj_size_mb: 1024
 overture_release: "latest"

@@ -35,6 +35,12 @@ def get_voronoi_eez_config(scenario: str) -> dict:
     return internal["voronoi_eez"] | user_overrides
 
 
+def get_gdal_config() -> dict:
+    """Get GDAL configuration with user overrides."""
+    gdal = internal["gdal"] | config.get("gdal", {})
+    return gdal
+
+
 def get_eez_file(scenario: str, country: str) -> str:
     """Build an EEZ filename reusable by scenarios with matching EEZ requests."""
     extra_eez = config["scenarios"][scenario]["countries"][country].get("extra_eez", [])

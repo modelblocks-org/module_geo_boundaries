@@ -26,6 +26,7 @@ rule download_geoboundaries:
         "../envs/shape.yaml"
     params:
         timeouts=internal["timeouts"],
+        geojson_max_obj_size_mb=get_gdal_config()["geojson_max_obj_size_mb"],
     message:
         "Downloading '{wildcards.country}_{wildcards.subtype}_{wildcards.release_type}' dataset from geoBoundaries."
     script:
@@ -42,6 +43,7 @@ rule download_gadm:
         "../envs/shape.yaml"
     params:
         timeouts=internal["timeouts"],
+        geojson_max_obj_size_mb=get_gdal_config()["geojson_max_obj_size_mb"],
     message:
         "Download '{wildcards.country}_{wildcards.subtype}' dataset from GADM."
     script:

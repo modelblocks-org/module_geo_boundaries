@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import geopandas as gpd
+import pyogrio
 import requests
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
@@ -75,3 +76,11 @@ def download_file(url: str, path: Path, timeouts: DownloadTimeouts) -> None:
     raise RuntimeError(
         f"Maximum retries {max_retries} reached without a valid response"
     )
+
+
+def read_geojson_file(path: Path, geojson_max_obj_size_mb: int) -> gpd.GeoDataFrame:
+    """Read a GeoJSON file with the configured GDAL object-size limit."""
+    pyogrio.set_gdal_config_options(
+        {"OGR_GEOJSON_MAX_OBJ_SIZE": str(geojson_max_obj_size_mb)}
+    )
+    return gpd.read_file(path)

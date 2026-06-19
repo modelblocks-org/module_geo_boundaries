@@ -23,6 +23,7 @@ def remove_overlaps(gdf: gpd.GeoDataFrame, crs: dict[str, CRS]) -> gpd.GeoDataFr
     from the later geometry.
     """
     projected = _geo.to_projected_crs(gdf, crs["projected"])
+    projected = _geo.make_geometries_valid(projected)
 
     left_idx, right_idx = projected.sindex.query(
         projected.geometry, predicate="intersects"
@@ -51,13 +52,10 @@ def remove_overlaps(gdf: gpd.GeoDataFrame, crs: dict[str, CRS]) -> gpd.GeoDataFr
             continue
 
         geom = geom.difference(shapely.unary_union(cutters))
-        if geom is not None and not geom.is_empty and not geom.is_valid:
-            geom = shapely.make_valid(geom)
-
-        geoms[right] = geom
+        geoms[right] = _geo.make_geometry_valid(geom)
 
     projected["geometry"] = geoms
-    projected = projected.loc[projected.geometry.notna() & ~projected.geometry.is_empty]
+    projected = projected.loc[projected.geometry.notna()]
     result = _geo.to_geographic_crs(projected, crs["geographic"])
 
     return result
