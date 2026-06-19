@@ -88,6 +88,19 @@ $defs:
         default: 1
         minimum: 0
 
+  gdalSettings:
+    description: Optional GDAL runtime configuration.
+    type: object
+    additionalProperties: false
+    properties:
+      geojson_max_obj_size_mb:
+        description: >
+          Maximum accepted size in megabytes for a single GeoJSON object read by
+          GDAL. Set to 0 to disable GDAL's single-object limit.
+        type: integer
+        default: 1024
+        minimum: 0
+
   scenario:
     type: object
     required:
@@ -222,6 +235,8 @@ properties:
     $ref: "#/$defs/crsSettings"
   voronoi_eez:
     $ref: "#/$defs/partialVoronoiEEZSettings"
+  gdal:
+    $ref: "#/$defs/gdalSettings"
   overture_release:
     description: |
       Overture data release to use. Two options are possible:

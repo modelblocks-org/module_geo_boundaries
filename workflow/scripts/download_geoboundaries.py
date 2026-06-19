@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import geopandas as gpd
-from _utils import DownloadTimeouts, download_file
+from _utils import DownloadTimeouts, download_file, read_geojson_file
 
 if TYPE_CHECKING:
     snakemake: Any
@@ -23,7 +23,11 @@ GEOBOUNDARIES_CRS = "EPSG:4326"
 
 
 def download_country_geoboundaries(
-    country: str, subtype: str, release_type: str, timeouts: DownloadTimeouts
+    country: str,
+    subtype: str,
+    release_type: str,
+    timeouts: DownloadTimeouts,
+    geojson_max_obj_size_mb: int,
 ) -> gpd.GeoDataFrame:
     """Download country data from geoBoundaries.
 
@@ -46,7 +50,7 @@ def download_country_geoboundaries(
         geojson_path = tmp_path / "download.geojson"
         download_file(geojson_url, geojson_path, timeouts)
 
-        gdf = gpd.read_file(geojson_path)
+        gdf = read_geojson_file(geojson_path, geojson_max_obj_size_mb)
         if gdf.empty:
             raise RuntimeError(
                 f"Downloaded empty geoBoundaries file from {geojson_url!r}."
@@ -64,6 +68,7 @@ def main():
         snakemake.wildcards.subtype,
         snakemake.wildcards.release_type,
         timeouts,
+        snakemake.params.geojson_max_obj_size_mb,
     )
     country.to_parquet(snakemake.output.path)
 
