@@ -134,6 +134,7 @@ Thanks goes to these wonderful people, sorted alphabetically ([emoji key](https:
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://www.pfenninger.org"><img src="https://avatars.githubusercontent.com/u/141709?v=4?s=100" width="100px;" alt="Stefan Pfenninger-Lee"/><br /><sub><b>Stefan Pfenninger-Lee</b></sub></a><br /><a href="#ideas-sjpfenninger" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/modelblocks-org/module_geo_boundaries/pulls?q=is%3Apr+reviewed-by%3Asjpfenninger" title="Reviewed Pull Requests">👀</a> <a href="#projectManagement-sjpfenninger" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tud-mchen6"><img src="https://avatars.githubusercontent.com/u/133768452?v=4?s=100" width="100px;" alt="mchen6"/><br /><sub><b>mchen6</b></sub></a><br /><a href="https://github.com/modelblocks-org/module_geo_boundaries/issues?q=author%3Atud-mchen6" title="Bug reports">🐛</a> <a href="https://github.com/modelblocks-org/module_geo_boundaries/pulls?q=is%3Apr+reviewed-by%3Atud-mchen6" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>
 </table>
