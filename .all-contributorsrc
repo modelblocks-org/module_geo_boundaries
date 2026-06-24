@@ -9,8 +9,21 @@
   "imageSize": 100,
   "commit": false,
   "commitConvention": "none",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "sjpfenninger",
+      "name": "Stefan Pfenninger-Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/141709?v=4",
+      "profile": "http://www.pfenninger.org",
+      "contributions": [
+        "ideas",
+        "review",
+        "projectManagement"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "linkToUsage": false,
-  "contributorsSortAlphabetically": true
+  "contributorsSortAlphabetically": true,
+  "commitType": "docs"
 }
