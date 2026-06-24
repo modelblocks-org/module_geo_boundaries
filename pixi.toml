@@ -1,7 +1,7 @@
 [workspace]
 name = "module_geo_boundaries"
 authors = ["See AUTHORS file"]
-description = "A module to create arbitrary regional boundary datasets for energy systems modelling"
+description = "A module to create arbitrary geopolitical boundary datasets for energy systems modelling."
 license = "Apache-2.0"
 readme = "README.md"
 channels = ["conda-forge", "bioconda"]
@@ -9,7 +9,7 @@ platforms = ["win-64", "linux-64", "osx-arm64"]
 homepage = "https://www.modelblocks.org/"
 
 [dependencies]
-clio-tools = ">=2026.03.30"
+clio-tools = ">=2026.06.23"
 conda = ">=25.0.0"
 ipdb = ">=0.13.13"
 ipykernel = ">=6.29.5"
@@ -19,59 +19,49 @@ pytest = ">=8.3.5"
 python = ">=3.12"
 ruff = ">=0.9.9"
 snakefmt = ">=0.10.2"
-snakemake-minimal = ">=8.29.0"
+snakemake-minimal = ">=9.19.0"
 pytz = ">=2026.1.post1"
+
+[feature.module.dependencies]
+boto3 = ">=1.40.46"
+duckdb = ">=1.2.0"
+geopandas = ">=1.1.3"
+ipdb = ">=0.13.13"
+pandera-geopandas = ">=0.24"
+pandera-io = ">=0.24"
+pyarrow = ">=19.0.1"
+pycountry = ">=24.6.1"
+shapely = ">=2.1.1"
+numpy = ">=2.3.5"
+pandas = ">=3.0.2"
+pytz = ">=2026.2"
+requests = ">=2.33.1"
+antimeridian = ">=0.4.7"
+rasterio = ">=1.4.4"
+
+[environments]
+module = { features = ["module"], no-default-feature = true }
 
 [tasks]
 test-integration = {cmd = "pytest tests/integration_test.py"}
 
-[tasks.export-conda-spec]
-description = "Export one pixi environment/platform as a conda explicit spec"
-args = ["env", "platform"]
-cmd = "pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' workflow/envs/"
-
-[tasks.rename-conda-spec]
-description = "Rename one pixi conda explicit spec to a Snakemake pin file"
-args = ["env", "platform"]
-cmd = "mv workflow/envs/{{ env }}_{{ platform }}_conda_spec.txt workflow/envs/{{ env }}.{{ platform }}.pin.txt"
-
-[tasks.export-snakemake-pin]
-description = "Export one pixi environment/platform as a Snakemake-compatible conda pin file"
-args = ["env", "platform"]
-depends-on = [
-  { task = "export-conda-spec", args = ["{{ env }}", "{{ platform }}"] },
-  { task = "rename-conda-spec", args = ["{{ env }}", "{{ platform }}"] },
-]
 
 [tasks.export-snakemake-env]
-description = "Export one pixi environment as a Snakemake conda environment"
-args = ["env"]
+description = "Export one Pixi environment as Snakemake-compatible conda files"
+args = ["env", { arg = "outdir", default = "workflow/envs" }]
 depends-on = [
-  { task = "export-snakemake-pin", args = ["{{ env }}", "win-64"] },
-  { task = "export-snakemake-pin", args = ["{{ env }}", "linux-64"] },
-  { task = "export-snakemake-pin", args = ["{{ env }}", "osx-arm64"] },
+  { task = "_export-snakemake-pin", args = ["{{ env }}", "win-64", "{{ outdir }}"] },
+  { task = "_export-snakemake-pin", args = ["{{ env }}", "linux-64", "{{ outdir }}"] },
+  { task = "_export-snakemake-pin", args = ["{{ env }}", "osx-arm64", "{{ outdir }}"] },
 ]
-cmd = "pixi workspace export conda-environment --environment '{{ env }}' workflow/envs/{{ env }}.yaml"
+cmd = "pixi workspace export conda-environment --environment '{{ env }}' '{{ outdir }}/{{ env }}.yaml'"
 
-[feature.shape]
-channels = ["conda-forge"]
+[tasks._export-snakemake-pin]
+description = "Export one Pixi environment/platform as a Snakemake-compatible pin file"
+args = ["env", "platform", { arg = "outdir", default = "workflow/envs" }]
+cmd = """
+set -e
+pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' '{{ outdir }}'
+mv '{{ outdir }}/{{ env }}_{{ platform }}_conda_spec.txt' '{{ outdir }}/{{ env }}.{{ platform }}.pin.txt'
+"""
 
-[feature.shape.dependencies]
-boto3 = "1.40.46.*"
-duckdb = "1.2.0.*"
-geopandas = "1.1.3.*"
-ipdb = "0.13.13.*"
-pandera-geopandas = "0.24.*"
-pandera-io = "0.24.*"
-pyarrow = "19.0.1.*"
-pycountry = "24.6.1.*"
-shapely = "2.1.1.*"
-numpy = "2.3.5.*"
-pandas = "3.0.2.*"
-pytz = "2026.2.*"
-requests = "2.33.1.*"
-antimeridian = "0.4.7.*"
-rasterio = "1.4.4.*"
-
-[environments]
-shape = { features = ["shape"], no-default-feature = true }

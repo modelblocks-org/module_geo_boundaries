@@ -12,7 +12,8 @@ __pycache__
 *.pyc
 
 ### Environments
-.pixi/
+.pixi/*
+!.pixi/.gitignore
 
 ### Snakemake
 .snakemake/

@@ -13,7 +13,7 @@ rule build_eez:
     log:
         "<logs>/eez/build/{country}_{eez_key}.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     message:
         "{wildcards.country}: build EEZ dataset {wildcards.eez_key}."
     script:
@@ -39,7 +39,7 @@ rule build_country:
     log:
         "<logs>/scenarios/{scenario}/build_country/{country}.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         crs=lambda wc: get_crs_config(wc.scenario),
         voronoi=lambda wc: get_voronoi_eez_config(wc.scenario),
@@ -66,7 +66,7 @@ rule build_combined_area:
     log:
         "<logs>/scenarios/{scenario}/build_combined_area.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         crs=lambda wc: get_crs_config(wc.scenario),
         countries=lambda wc: sorted(

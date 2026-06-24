@@ -50,7 +50,7 @@ rule all:
     log:
         stderr="<logs>/all.stderr",
     conda:
-        "envs/shell.yaml"
+        "envs/module.yaml"
     message:
         "ERROR: Invalid `rule all:` call"
     shell:

@@ -8,7 +8,7 @@ rule download_duckdb_extensions:
         "<logs>/download_duckdb_extensions.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     threads: 1
     message:
         "Downloading DuckDB extensions."
@@ -23,7 +23,7 @@ rule download_geoboundaries:
         "<logs>/geoboundaries/download/{country}_{subtype}_{release_type}.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         timeouts=internal["timeouts"],
         geojson_max_obj_size_mb=get_gdal_config()["geojson_max_obj_size_mb"],
@@ -40,7 +40,7 @@ rule download_gadm:
         "<logs>/gadm/download/{country}_{subtype}.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         timeouts=internal["timeouts"],
         geojson_max_obj_size_mb=get_gdal_config()["geojson_max_obj_size_mb"],
@@ -57,7 +57,7 @@ rule download_nuts:
         "<logs>/nuts/download/{subtype}_{resolution}_{year}.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         timeouts=internal["timeouts"],
     message:

@@ -9,7 +9,7 @@ rule harmonise_geoboundaries:
     log:
         "<logs>/geoboundaries/harmonise/{country}_{subtype}_{release_type}.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     message:
         "Harmonising '{wildcards.country}_{wildcards.subtype}_{wildcards.release_type}' dataset from geoBoundaries."
     script:
@@ -25,7 +25,7 @@ rule download_harmonised_overture:
         "<logs>/overture/download_and_harmonise/{country}_{subtype}.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         version=config.get("overture_release", internal["overture_release"]),
     message:
@@ -42,7 +42,7 @@ rule harmonise_gadm:
     log:
         "<logs>/gadm/harmonise/{country}_{subtype}.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     message:
         "Harmonising '{wildcards.country}_{wildcards.subtype}' GADM dataset."
     script:
@@ -57,7 +57,7 @@ rule harmonise_nuts:
     log:
         "<logs>/nuts/harmonise/{country}_{subtype}_{year}_{resolution}.log",
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     message:
         "Harmonising '{wildcards.country}' NUTS dataset for '{wildcards.subtype}_{wildcards.resolution}_{wildcards.year}'."
     script:
@@ -77,7 +77,7 @@ rule download_harmonised_eez:
         "<logs>/eez/download_harmonised/{eez}.log",
     localrule: True
     conda:
-        "../envs/shape.yaml"
+        "../envs/module.yaml"
     params:
         timeouts=internal["timeouts"],
     message:
