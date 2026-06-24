@@ -4,8 +4,8 @@ PLEASE ENSURE THIS SET OF MINIMAL TESTS WORKS BEFORE PUBLISHING YOUR MODULE.
 Contents may be updated in future template updates.
 """
 
-import json
 import subprocess
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -13,22 +13,13 @@ from clio_tools.data_module import ModuleInterface
 
 
 @pytest.fixture(scope="module")
-def pixi_environments(module_path) -> dict:
-    """Pixi environments defined for this project."""
-    process = subprocess.run(
-        ["pixi", "info", "--json"],
-        check=True,
-        cwd=module_path,
-        capture_output=True,
-        text=True,
-    )
-    return {
-        environment["name"]: environment
-        for environment in json.loads(process.stdout)["environments_info"]
-    }
+def pixi_platforms(module_path) -> list[str]:
+    """Pixi platforms defined for this project."""
+    with (module_path / "pixi.toml").open("rb") as pixi_config:
+        return tomllib.load(pixi_config)["workspace"]["platforms"]
 
 
-def test_snakemake_environments(module_path, pixi_environments, tmp_path):
+def test_snakemake_environments(module_path, pixi_platforms, tmp_path):
     """All Snakemake environment files should be based on pixi counterparts."""
     env_dir = module_path / "workflow/envs"
     env_files = sorted(env_dir.glob("*.yaml"))
@@ -47,7 +38,7 @@ def test_snakemake_environments(module_path, pixi_environments, tmp_path):
         generated_yaml = output_dir / env_file.name
         assert generated_yaml.read_text() == env_file.read_text()
 
-        for platform in pixi_environments[env_name]["platforms"]:
+        for platform in pixi_platforms:
             pin_file = env_dir / f"{env_name}.{platform}.pin.txt"
             assert pin_file.exists(), f"{env_name} has no conda pins for {platform}"
 
