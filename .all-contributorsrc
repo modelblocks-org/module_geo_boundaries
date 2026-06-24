@@ -30,6 +30,15 @@
         "bug",
         "review"
       ]
+    },
+    {
+      "login": "FraSanvit",
+      "name": "Francesco Sanvito",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68587472?v=4",
+      "profile": "https://github.com/FraSanvit",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
