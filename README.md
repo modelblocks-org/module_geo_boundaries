@@ -130,8 +130,17 @@ Thanks goes to these wonderful people, sorted alphabetically ([emoji key](https:
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tud-mchen6"><img src="https://avatars.githubusercontent.com/u/133768452?v=4?s=100" width="100px;" alt="mchen6"/><br /><sub><b>mchen6</b></sub></a><br /><a href="https://github.com/modelblocks-org/module_geo_boundaries/issues?q=author%3Atud-mchen6" title="Bug reports">🐛</a> <a href="https://github.com/modelblocks-org/module_geo_boundaries/pulls?q=is%3Apr+reviewed-by%3Atud-mchen6" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
