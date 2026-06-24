@@ -1,6 +1,6 @@
-# Modelblocks - Geo-boundaries module
+# Geo-boundaries module
 
-A module to create arbitrary regional boundary datasets for energy systems modelling
+A module to create arbitrary geopolitical boundary datasets for energy systems modelling.
 
 <!-- Place an attractive image of module outputs here -->
 <p align="center">
@@ -75,6 +75,21 @@ cd module_geo_boundaries
 pixi install --all
 ```
 
+Please be aware that this is a multi-environment project (see [pixi.toml](./pixi.toml) for details).
+- `default`: used for development and integration testing.
+Because it contains `Snakemake`, `conda` and `pytest` as dependencies it **should not be used** in `Snakemake` rules.
+- `module`: contains minimal dependencies used in `Snakemake` rules.
+If modified, be sure to export it to `Snakemake` so it can be recreated by module users:
+
+```shell
+# create module.yaml and conda-spec pin files in workflow/envs/
+pixi run export-snakemake-env module
+```
+
+
+## Testing
+<!-- Please do not modify this templated section -->
+
 For testing, simply run:
 
 ```shell
@@ -92,7 +107,7 @@ snakemake --use-conda --cores 2  # run the workflow!
 ## References
 <!-- Please provide thorough referencing below -->
 
-This module is based on the following research and datasets.
+This module is based on the following research and datasets:
 We encourage users to cite both the original source and our workflow.
 
 - eurostat NUTS (various years). Nomenclature of territorial units for statistics (NUTS).
@@ -107,3 +122,16 @@ We encourage users to cite both the original source and our workflow.
     - License: CC-By. See <https://www.marineregions.org/disclaimer.php>.
 - Overture Maps Divisions database (most recent version). Overture Maps Foundation.
     - License: ODbL. See <https://docs.overturemaps.org/attribution/> and <https://opendatacommons.org/licenses/odbl/summary/> for details.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people, sorted alphabetically ([emoji key](https://allcontributors.org/en/reference/emoji-key/)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
