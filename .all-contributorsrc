@@ -11,6 +11,17 @@
   "commitConvention": "none",
   "contributors": [
     {
+      "login": "sjpfenninger",
+      "name": "Stefan Pfenninger-Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/141709?v=4",
+      "profile": "http://www.pfenninger.org",
+      "contributions": [
+        "ideas",
+        "review",
+        "projectManagement"
+      ]
+    },
+    {
       "login": "tud-mchen6",
       "name": "mchen6",
       "avatar_url": "https://avatars.githubusercontent.com/u/133768452?v=4",
