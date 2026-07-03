@@ -1,4 +1,4 @@
-# Geo-boundaries module
+# Geo-boundaries
 
 A module to create arbitrary geopolitical boundary datasets for energy systems modelling.
 

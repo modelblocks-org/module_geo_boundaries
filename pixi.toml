@@ -58,9 +58,13 @@ cmd = "pixi workspace export conda-environment --environment '{{ env }}' '{{ out
 
 [tasks._export-snakemake-pin]
 description = "Export one Pixi environment/platform as a Snakemake-compatible pin file"
-args = ["env", "platform", { arg = "outdir", default = "workflow/envs" }]
-cmd = """
-set -e
-pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' '{{ outdir }}'
-mv '{{ outdir }}/{{ env }}_{{ platform }}_conda_spec.txt' '{{ outdir }}/{{ env }}.{{ platform }}.pin.txt'
-"""
+args = ["env", "platform", "outdir"]
+depends-on = [
+  { task = "_export-conda-explicit-spec", args = ["{{ env }}", "{{ platform }}", "{{ outdir }}"] },
+]
+cmd = "mv '{{ outdir }}/{{ env }}_{{ platform }}_conda_spec.txt' '{{ outdir }}/{{ env }}.{{ platform }}.pin.txt'"
+
+[tasks._export-conda-explicit-spec]
+description = "Export one Pixi environment/platform as an explicit conda spec file"
+args = ["env", "platform", "outdir"]
+cmd = "pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' '{{ outdir }}'"
