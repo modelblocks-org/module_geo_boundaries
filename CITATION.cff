@@ -3,12 +3,13 @@
 # https://citation-file-format.github.io/
 cff-version: 1.2.0
 message: If you use this software or data produced by it, please cite it using the metadata from this file.
-title: "Modelblocks - module_geo_boundaries: Geo-boundaries module"
+title: "Modelblocks - module_geo_boundaries: Geo-boundaries"
 repository: "https://github.com/modelblocks-org/module_geo_boundaries"
 license: Apache-2.0
 authors:
-  - given-names: Ivan
-    family-names: Ruiz Manuel
+  - given-names: "Ivan"
+    family-names: "Ruiz Manuel"
+    email: "i.ruizmanuel@tudelft.nl"
     orcid: "0000-0003-2288-6423"
   - given-names: Stefan
     family-names: Pfenninger-Lee
