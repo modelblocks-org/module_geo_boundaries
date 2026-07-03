@@ -68,4 +68,3 @@ cmd = "mv '{{ outdir }}/{{ env }}_{{ platform }}_conda_spec.txt' '{{ outdir }}/{
 description = "Export one Pixi environment/platform as an explicit conda spec file"
 args = ["env", "platform", "outdir"]
 cmd = "pixi workspace export conda-explicit-spec --environment '{{ env }}' --platform '{{ platform }}' '{{ outdir }}'"
-
