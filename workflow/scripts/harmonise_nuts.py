@@ -4,13 +4,14 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 import _schemas
+import country_converter as coco
 import geopandas as gpd
-import pycountry
 
 if TYPE_CHECKING:
     snakemake: Any
 sys.stderr = open(snakemake.log[0], "w")
 
+CC = coco.CountryConverter()
 UNIQUE_ISO3_TO_NUTS = {
     "GRC": "EL",  # Greece
     "GBR": "UK",  # United Kingdom
@@ -21,7 +22,7 @@ def _iso_a3_to_nuts(code):
     """Obtain NUTS code for the requested country, handling special cases."""
     nuts = UNIQUE_ISO3_TO_NUTS.get(code, None)
     if nuts is None:
-        nuts = pycountry.countries.get(alpha_3=code).alpha_2
+        nuts = CC.convert(code, src="ISO3", to="ISO2")
     return nuts
 
 

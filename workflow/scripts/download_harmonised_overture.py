@@ -6,9 +6,9 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
 import boto3
+import country_converter as coco
 import duckdb
 import geopandas as gpd
-import pycountry
 from _schemas import ShapesSchema
 from botocore import UNSIGNED
 from botocore.config import Config
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     snakemake: Any
 
 
+CC = coco.CountryConverter()
 S3_REGION = "us-west-2"
 S3_BUCKET = f"overturemaps-{S3_REGION}"
 S3_RELEASE_PREFIX = "release/"
@@ -92,7 +93,7 @@ def download_country_overture(country: str, subtype: str, version: str, path: st
     Uses duckdb for remote interfacing and 'larger than memory' file generation.
     """
     # Prepare variables for the request
-    country_a2 = pycountry.countries.get(alpha_3=country).alpha_2
+    country_a2 = CC.convert(country, src="ISO3", to="ISO2")
     overture_glob = _resolve_overture_glob(version)
 
     # Setup SQL connection to the remote dataset
