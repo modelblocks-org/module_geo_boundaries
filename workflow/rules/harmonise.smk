@@ -80,6 +80,7 @@ rule download_harmonised_eez:
         "../envs/module.yaml"
     params:
         timeouts=internal["timeouts"],
+        version=config.get("marine_regions_release", internal["marine_regions_release"]),
     message:
         "Download and harmonise EEZ dataset '{wildcards.eez}'."
     script:

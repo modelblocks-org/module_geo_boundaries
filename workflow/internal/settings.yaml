@@ -15,3 +15,4 @@ timeouts:
 gdal:
   geojson_max_obj_size_mb: 1024
 overture_release: "latest"
+marine_regions_release: "2.0.0"

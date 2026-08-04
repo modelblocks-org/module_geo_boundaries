@@ -38,6 +38,7 @@ pytz = ">=2026.2"
 requests = ">=2.33.1"
 antimeridian = ">=0.4.7"
 rasterio = ">=1.4.4"
+semver = ">=3.0.4"
 
 [environments]
 module = { features = ["module"], no-default-feature = true }

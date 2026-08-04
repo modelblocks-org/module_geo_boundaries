@@ -19,3 +19,4 @@ dependencies:
 - requests >=2.33.1
 - antimeridian >=0.4.7
 - rasterio >=1.4.4
+- semver >=3.0.4

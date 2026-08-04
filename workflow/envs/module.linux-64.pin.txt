@@ -23,6 +23,7 @@ https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda#4a13
 https://conda.anaconda.org/conda-forge/linux-64/ld_impl_linux-64-2.45.1-default_hbd61a6d_102.conda#18335a698559cdbcd86150a48bf54ba6
 https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-hda65f42_9.conda#d2ffd7602c02f2b316fd921d39876885
 https://conda.anaconda.org/conda-forge/linux-64/python-3.12.13-hd63d673_0_cpython.conda#7eccb41177e15cc672e1babe9056018e
+https://conda.anaconda.org/conda-forge/noarch/semver-3.0.4-pyhcf101f3_1.conda#8e7be844ccb9706a999a337e056606ab
 https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda#3687cc0b82a8b4c17e1f0eb7e47163d5
 https://conda.anaconda.org/conda-forge/noarch/python_abi-3.12-8_cp312.conda#c3efd25ac4d74b1584d2f7a57195ddf1
 https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-15.2.0-h934c35e_19.conda#5794b3bdc38177caf969dabd3af08549
