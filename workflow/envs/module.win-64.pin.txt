@@ -18,6 +18,7 @@ https://conda.anaconda.org/conda-forge/win-64/libffi-3.5.2-h3d046cb_0.conda#720b
 https://conda.anaconda.org/conda-forge/win-64/libexpat-2.8.1-hac47afa_1.conda#ccc490c81ffe14181861beac0e8f3169
 https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h0ad9c76_9.conda#4cb8e6b48f67de0b018719cdf1136306
 https://conda.anaconda.org/conda-forge/win-64/python-3.13.14-h09917c8_100_cp313.conda#12e0de38e6bb7f7745ec0d19a20b8270
+https://conda.anaconda.org/conda-forge/noarch/semver-3.0.4-pyhcf101f3_1.conda#8e7be844ccb9706a999a337e056606ab
 https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda#3687cc0b82a8b4c17e1f0eb7e47163d5
 https://conda.anaconda.org/conda-forge/win-64/libiconv-1.18-hc1393d2_2.conda#64571d1dd6cdcfa25d0664a5950fdaa2
 https://conda.anaconda.org/conda-forge/win-64/libxml2-16-2.15.3-h692994f_0.conda#f7d6fcda29570e20851b78d92ea2154e

@@ -245,6 +245,12 @@ properties:
     type: string
     default: "latest"
     pattern: "^(?:latest|(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\.\\d+)$"
+  marine_regions_release:
+    description: |
+      MarineRegions WFS version to use to access EEZ data.
+    type: string
+    default: "2.0.0"
+    enum: ["2.0.0"]
   scenarios:
     description: >
       Shape-building scenarios to run.

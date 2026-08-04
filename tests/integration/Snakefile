@@ -12,7 +12,7 @@ module module_geo_boundaries:
         shapes="results/outputs/{scenario}/shapes.parquet",
         # Redirect module intermediate files
         logs="resources/module/logs",
-        resources="resources/module/resources",
+        resources=temp("resources/module/resources"),
         results="resources/module/results",
     snakefile:
         "../../workflow/Snakefile"
