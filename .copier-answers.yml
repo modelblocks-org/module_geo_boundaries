@@ -12,6 +12,9 @@ maintainers:
 -   email: i.ruizmanuel@tudelft.nl
     family_name: Ruiz Manuel
     given_name: Ivan
+-   email: 17178478+brynpickering@users.noreply.github.com
+    family_name: Pickering
+    given_name: Bryn
 module_code_name: module_geo_boundaries
 module_description: A module to create arbitrary geopolitical boundary datasets for
     energy systems modelling.
