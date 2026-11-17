@@ -284,6 +284,7 @@ def _split_one_maritime(
         ):
             piece = base_row.copy()
             piece["shape_id"] = f"{maritime_row.shape_id}_to_{assigned_id}"
+            piece["nearest_land_shape_id"] = assigned_id
             piece["geometry"] = geometry
             piece_rows.append(piece)
         pieces = gpd.GeoDataFrame(piece_rows, geometry="geometry", crs=crs)
