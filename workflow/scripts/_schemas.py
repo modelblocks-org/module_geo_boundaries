@@ -3,7 +3,6 @@
 import geopandas as gpd
 from _geo import make_geometries_valid
 from pandera import pandas as pa
-from typing import Optional
 from pandera.typing.geopandas import GeoSeries
 from pandera.typing.pandas import Series
 from shapely.geometry import MultiPolygon, Polygon
@@ -36,7 +35,7 @@ class ShapesSchema(pa.DataFrameModel):
     "Unique id in the parent dataset."
     parent_name: Series[str]
     "Human-readable name in the parent dataset."
-    nearest_land_shape_id: Optional[Series[str]] = pa.Field(nullable=True)
+    nearest_land_shape_id: Series[str] | None = pa.Field(nullable=True)
     "ID of the nearest land shape."
 
     @pa.dataframe_parser
